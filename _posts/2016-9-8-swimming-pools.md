@@ -14,7 +14,7 @@ at scale.  This is why the Australian company PSMA teamed up with DG to develop 
 including height, rooftop material, solar panel installation and presence of a swimming pool
 in the property across the **entire Australian continent**.
 
-We'll demonstrate **how we used deep learning on GBDX to identify swimming pools in thousands of properties** across
+We'll demonstrate how we used deep learning on GBDX to identify swimming pools in thousands of properties across
 [Adelaide](https://en.wikipedia.org/wiki/Adelaide), a major city on the southern coast of Australia with a population of approximately one million. The result: **just under 5% of the 670,784 properties that we classified** contain pools.
 This is more or less consistent with the Australian Bureau of Statistics data for [households with pool in South Australia](http://www.abs.gov.au/ausstats/abs@.nsf/Products/F4641220D19FD971CA2573A80011AD41?opendocument). Compare this with the corresponding figure for New South Wales which is upwards of 10%. Given the similar arid or semi-arid climate, could we identify other reasons for the discrepancy? A little digging into the regions' economic health might provide some clues:
 New South Wales has [a significantly higher average annual income](http://www.abs.gov.au/ausstats/abs@.nsf/mf/5673.0.55.003) compared to South Australia. Given the installation and maintenance costs of a swimming pool, their number could be a potential indicator of economic health!
