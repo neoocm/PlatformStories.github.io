@@ -3,25 +3,24 @@ layout: post
 title: Finding swimming pools in Australia
 ---
 
-Information about built environments such as building heights, rooftop
-materials, presence of solar panels and swimming pools is extremely valuable
+Information about built environments is extremely valuable
 to [insurance companies](https://www.allstate.com/tools-and-resources/home-insurance/swimming-pool-insurance.aspx), [tax accessors](http://www.spiegel.de/international/europe/finding-swimming-pools-with-google-earth-greek-government-hauls-in-billions-in-back-taxes-a-709703.html), and public agencies.
 It empowers a wide range of decision-making including government service design,
 urban and regional planning and management, risk estimation, and emergency response.
+
 Extracting this information using human analysts to scour satellite imagery
 is prohibitively expensive and time consuming. Feature extraction and machine
 learning algorithms are the only viable way to perform this type of attribution
-at scale.   
+at scale.  This is why the Australian company PSMA teamed up with DG to develop the product
+[Geoscape](https://www.psma.com.au/geoscape): a diverse set of building attributes 
+including height, rooftop material, solar panel installation and presence of a swimming pool
+in the property across the **entire Australian continent**.
 
-The Australian company PSMA teamed up with DG to develop the product
-[Geoscape](https://www.psma.com.au/geoscape), which will derive building
-and property attributes for the entire Australian continent.
-In this example, we're going to focus on a particular attribute: presence (or not)
-of a swimming pool within a property. We will use GBDX to train and deploy a
-convolutional neural network (CNN) in order to classify a number of properties.
-For more information on the algorithm itself, have a look
-[here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
-[here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
+We'll demonstrate **how we used deep learning on GBDX to identify swimming pools in thousands of properties** across
+[Adelaide](https://en.wikipedia.org/wiki/Adelaide), a major city on the southern coast of Australia with a population of approximately one million. The result: **just under 5% of the 670,784 properties that we classified** contain pools.
+This is more or less consistent with the Australian Bureau of Statistics data for [households with pool in South Australia]
+(http://www.abs.gov.au/ausstats/abs@.nsf/Products/F4641220D19FD971CA2573A80011AD41?opendocument). Compare this with the corresponding figure for New South Wales which is upwards of 10%. Given the similar arid or semi-arid climate, could we identify other reasons for the discrepancy? A little digging into the regions' economic health might provide some clues:
+New South Wales has [a significantly higher average annual income](http://www.abs.gov.au/ausstats/abs@.nsf/mf/5673.0.55.003) compared to South Australia. Given the installation and maintenance costs of a swimming pool, their number could be a potential indicator of economic health!
 
 ![properties.png]({{ site.baseurl }}/images/swimming-pools/properties.png)
 *A sample of properties. Green/red indicate presence/absence of pool.*
@@ -34,7 +33,7 @@ Our GBDX workflow is shown in the following figure:
 
 #### Preprocessing
 
-As you can see on the left of the diagram above we begin with the file [properties.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/my_map.html) by entering your GBDX token when prompted. (The token can be found in the .gbdx-config file in your root directory.) Alternatively, you can view the image thumbnail by searching for 1040010014800C00 [here](https://discover.digitalglobe.com/) and navigating to Adelaide using the map.
+The workflow begins with the file [properties.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/my_map.html) by entering your GBDX token when prompted. (The token can be found in the .gbdx-config file in your root directory.) Alternatively, you can view the image thumbnail by searching for 1040010014800C00 [here](https://discover.digitalglobe.com/) and navigating to Adelaide using the map.
 
 The main idea is to label a small percentage of the property parcels using [crowdsourcing](http://www.tomnod.com/) in order to create a training set [train.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson). We then use train.geojson to train a CNN-based classifier to identify the presence of a swimming pool in each of the remaining unlabeled properties of properties.geojson (referred to as [target.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson)). For object classification at a continental or global scale this procedure is a must; it would be virtually impossible to label millions of properties manually in a reasonable amount of time.
 
@@ -216,3 +215,8 @@ obtained, it can be deployed on properties over hundreds of different images
 
 In order to exploit the power of GBDX, an algorithm must be packaged into a task
 which can run on the Platform. The procedure is described [here](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task) in detail.
+
+You can find more information on the algorithm used in this example 
+[here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
+[here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
+
