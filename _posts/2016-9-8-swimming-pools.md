@@ -26,7 +26,8 @@ New South Wales has [a significantly higher average annual income](http://www.ab
 
 ### How
 
-Our GBDX workflow is shown in the following figure:
+Our GBDX workflow is shown in the following figure.
+
 ![workflow_diag.png]({{ site.baseurl }}/images/swimming-pools/workflow_diag.png)  
 *Platform workflow for property classification.*
 
