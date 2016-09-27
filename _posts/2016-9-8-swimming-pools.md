@@ -4,10 +4,8 @@ title: Finding swimming pools in Australia
 ---
 
 Information about built environments is extremely valuable
-to [insurance companies](https://www.allstate.com/tools-and-resources/home-insurance/swimming-pool-insurance.aspx), [tax accessors](http://www.spiegel.de/international/europe/finding-swimming-pools-with-google-earth-greek-government-hauls-in-billions-in-back-taxes-a-709703.html), and public agencies.
-It empowers a wide range of decision-making including government service design,
+to [insurance companies](https://www.allstate.com/tools-and-resources/home-insurance/swimming-pool-insurance.aspx), [tax accessors](http://www.spiegel.de/international/europe/finding-swimming-pools-with-google-earth-greek-government-hauls-in-billions-in-back-taxes-a-709703.html), and public agencies, as it empowers a wide range of decision-making including 
 urban and regional planning and management, risk estimation, and emergency response.
-
 Extracting this information using human analysts to scour satellite imagery
 is prohibitively expensive and time consuming. Feature extraction and machine
 learning algorithms are the only viable way to perform this type of attribution
