@@ -93,7 +93,7 @@
 			    	if (!result.idToken) return;
 
 				    // Do something with the token here.
-				     localStorage.setItem('idToken', authResult.idToken);
+				     localStorage.setItem('idToken', result.idToken);
 			    runApp();
 		    });
 		    lock.on('unrecoverable_error', function(result) {
