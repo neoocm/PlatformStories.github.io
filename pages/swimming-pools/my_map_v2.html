@@ -23,46 +23,12 @@
     </style>
 
 </head>
-<body>
-
-		<script>
-		   var lock = new Auth0Lock('vhaNEJymL4m1UCo4TqXmuKtkn9JCYDkT', 'digitalglobe-platform.auth0.com', {
-			    	// container: 'root',
-				    // initialScreen: localStorage.getItem('userHasEverLoggedIn') ? 'login' : 'signUp',
-			  	  theme: {
-				  	   	logo: 'https://avatars.githubusercontent.com/u/22379854?v=3',
-					  	  primaryColor: '#709900'
-				    },
-				    auth: {
-					    	params: {
-						   		scope: 'openid email offline_access'
-						    }
-				    }
-		    });
-		    lock.on('authenticated', function(result) {
-			    	if (!result.idToken) return;
-
-				    // Do something with the token here.
-				    alert('Success: token is ' + result.idToken);
-		    });
-		    lock.on('unrecoverable_error', function(result) {
-			    	alert('Error:' + result.error_description);
-		    });
-		    lock.on('authorization_error', function(result) {
-			    	alert('Error:' + result.error_description);
-		    });
-		    lock.show();
-		</script>
-
-
-
-
-    <div id="mapid"></div>
+<body>    
+   <div id="mapid"></div>
 
     <script>
-
-        $("#target").on("click", function() {
-
+	var runApp = function() {
+	    var token = localStorage.getItem('idToken');
             var mymap = L.map('mapid');
             var maxZoom = 20;
 
@@ -108,9 +74,38 @@
            addLayerToMap('idaho-images','1e211ed7-00bf-4860-941a-cef40a7dce50',138.4398169,-35.43557751,138.58777429,-35.36275052,'cabc7b36-5021-4ef8-a269-ee40c4787c85');
 
     		   mymap.setView([-35.43557751, 138.4398169], 11);
+		
+	}
 
-        });
+		   var lock = new Auth0Lock('vhaNEJymL4m1UCo4TqXmuKtkn9JCYDkT', 'digitalglobe-platform.auth0.com', {
+			    	// container: 'root',
+				    // initialScreen: localStorage.getItem('userHasEverLoggedIn') ? 'login' : 'signUp',
+			  	  theme: {
+				  	   	logo: 'https://avatars.githubusercontent.com/u/22379854?v=3',
+					  	  primaryColor: '#709900'
+				    },
+				    auth: {
+					    	params: {
+						   		scope: 'openid email offline_access'
+						    }
+				    }
+		    });
+		    lock.on('authenticated', function(result) {
+			    	if (!result.idToken) return;
 
+				    // Do something with the token here.
+				     localStorage.setItem('idToken', authResult.idToken);
+			    runApp();
+		    });
+		    lock.on('unrecoverable_error', function(result) {
+			    	alert('Error:' + result.error_description);
+		    });
+		    lock.on('authorization_error', function(result) {
+			    	alert('Error:' + result.error_description);
+		    });
+		    lock.show();
+	
+	
 	  </script>
 
 </body>
