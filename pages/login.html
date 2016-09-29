@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Platform Stories Visualization Login</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<script src="https://cdn.auth0.com/js/lock/10.2/lock.min.js"></script>
+
+	<style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #mapid {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+
+    <script>
+		  window.location = localStorage.getItem('desiredUrlAfterAuth');
+	  </script>
+
+</body>
+</html>
