@@ -199,13 +199,12 @@ Now that we have an understanding of how the train and deploy workflow operates,
 
 ### Visualizing the Results
 
-Once the workflow has completed and you have the classified.geojson file, you can visualize the classification results. We do this using the [geojson-vt](https://github.com/mapbox/geojson-vt) library developed by Mapbox to slice GeoJSON data into vector tiles on the fly. You can see this in action and interact with the results of our sample classification output [here]({{ site.baseurl }}/pages/swimming-pools/my_map_with_vectors.html) by entering your GBDX token.
+You can visualize the classification results [here]({{ site.baseurl }}/pages/swimming-pools/my_map_with_vectors.html) once you have entered your GBDX token in the prompt. Green/red polygons indicate presence/absence of pool. Clicking on each polygon shows the corresponding feature id and assigned classification.  
 
 ![vis_example.png]({{ site.baseurl }}/images/swimming-pools/vis_example.png)  
 *Sample results of our workflow. Properties containing pools are outlined in green.*
 
-Green polygons indicate the model identified a pool in the given property, red indicates no pool was found.
-You can also click on individual polygons to view their feature id and assigned classification.
+For this visualization, we used the [geojson-vt](https://github.com/mapbox/geojson-vt) library developed by Mapbox to slice the GeoJSON data into vector tiles on the fly. Pretty cool!
 
 
 ### Discussion
