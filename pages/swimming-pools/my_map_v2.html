@@ -102,7 +102,9 @@
 		    lock.on('authorization_error', function(result) {
 			    	alert('Error:' + result.error_description);
 		    });
-		    lock.show();
+            if (!token) {
+                lock.show();
+            }
 	
 	
 	  </script>
