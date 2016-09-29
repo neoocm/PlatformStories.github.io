@@ -23,7 +23,7 @@
     </style>
 
 </head>
-<body>    
+<body>
    <div id="mapid"></div>
 
     <script>
@@ -73,7 +73,7 @@
            addLayerToMap('idaho-images','1e211ed7-00bf-4860-941a-cef40a7dce50',138.4398169,-35.43557751,138.58777429,-35.36275052,'cabc7b36-5021-4ef8-a269-ee40c4787c85');
 
     		   mymap.setView([-35.43557751, 138.4398169], 11);
-		
+
 	}
 
 		   var lock = new Auth0Lock('vhaNEJymL4m1UCo4TqXmuKtkn9JCYDkT', 'digitalglobe-platform.auth0.com', {
@@ -102,14 +102,20 @@
 		    lock.on('authorization_error', function(result) {
 			    	alert('Error:' + result.error_description);
 		    });
-	    
-            if (!localStorage.getItem('idToken')) {
-                lock.show();
-            } else {
-		runApp();    
-	    }
-	
-	
+
+        //    if (!localStorage.getItem('idToken')) {
+        //        lock.show();
+        //    } else {
+		//runApp();
+	    //}
+
+			if (!localStorage.getItem('idToken')) {
+	        localStorage.setItem('desiredUrlAfterAuth', window.location);
+	        window.location = 'https://platformstories.github.io/pages/login.html';
+      } else {
+				    runApp()
+			}
+
 	  </script>
 
 </body>
