@@ -216,9 +216,8 @@ obtained, it can be deployed on properties over hundreds of different images
 ![scale.png]({{ site.baseurl }}/images/swimming-pools/scale.png)
 *GBDX allows large scale parallelization.*  
 
-In order to exploit the power of GBDX, an algorithm must be packaged into a task
-which can run on the Platform. The procedure is described [here](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task) in detail.
-
+In order to exploit the power of GBDX, an algorithm must be packaged into a GBDX task. 
+The procedure is described [here](https://platformstories.github.io/create-task) in detail.
 You can find more information on the algorithm used in this example
 [here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
 [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
