@@ -92,6 +92,7 @@ What exactly is going on in this script?
     # Get inputs
     input_dir = self.get_input_data_port('data_in')
     {% endhighlight %}
+    
     *data_in* is the name of the task **directory input port**. What {% highlight %}get_input_data_port('data_in'){% endhighlight %} does behind the scenes is return the string {% highlight %}'mnt/work/input/data_in'{% endhighlight %}. When the task is executed by the GBDX worker, the contents of the location on S3 specified by the value of *data_in* are copied onto the Docker container under mnt/work/input/data_in.
 
 3. The **value** of the parameter '*message*' is obtained using the {% highlight %}get_input_string_port{% endhighlight %} function (also inherited from **GbdxTaskInterface**).  
