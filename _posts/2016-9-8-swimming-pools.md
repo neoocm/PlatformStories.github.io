@@ -76,7 +76,7 @@ train_geojson/, target_geojson/, images/ under platform_stories/swimming_pools.
 ![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
 *deploy_cnn_classifier takes a model, target.geojson and imagery, and produces classified.geojson.*
 
-More information on these tasks can be found [here](https://github.com/PlatformStories/swimming-pools/tree/master/cnn_classifier_tasks/docs) for more information.
+More information on these tasks can be found [here](https://github.com/PlatformStories/swimming-pools/tree/master/cnn_classifier_tasks/docs).
 
 
 #### Workflow Outputs
