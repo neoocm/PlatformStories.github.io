@@ -106,16 +106,16 @@ We'll now put everything together in gbdxtools.
 1. Start an iPython terminal, create a GBDX interface, and get the input location information:
     
     ```python
-    from gbdxtools import Interface
-    from os.path import join
+from gbdxtools import Interface
+from os.path import join
 
-    gbdx = Interface()
-    bucket = gbdx.s3.info['bucket']
-    prefix = gbdx.s3.info['prefix']
+gbdx = Interface()
+bucket = gbdx.s3.info['bucket']
+prefix = gbdx.s3.info['prefix']
 
-    # specify location of files needed in this story
-    story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'swimming_pools')
-    ```
+# specify location of files needed in this story
+story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'swimming_pools')
+```
 
 2. Create a train_task object and set the required inputs:
 
