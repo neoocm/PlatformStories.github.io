@@ -120,67 +120,67 @@ Now that we have an understanding of how the train and deploy workflow operates,
 
 2. Now we may instantiate the train_cnn_classifier task and set the required inputs:
 
-    {% highlight python %}
+    ```python
     train_task = gbdx.Task('train_cnn_classifier')
     train_task.inputs.images = join(story_prefix, 'images')
     train_task.inputs.geojson = join(story_prefix, 'train_geojson')
     train_task.inputs.classes = 'No swimming pool, Swimming pool'     # Classes exactly as they appear in train.geojson
-    {% endhighlight %}
+    ```
 
 3. We can also set the optional hyper-parameter inputs to adjust how we train our model. See the [docs](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md) for background on these inputs, as well as additional hyper-parameters you can set.
 
-    {% highlight python %}
+    ```python
     train_task.inputs.nb_epoch = '30'
     train_task.inputs.nb_epoch_2 = '5'
     train_task.inputs.train_size = '4500'
     train_task.inputs.train_size_2 = '2500'
     train_task.inputs.test_size = '1000'
     train_task.inputs.bit_depth = '8'         # Provided imagery is dra'd
-    {% endhighlight %}  
+    ```  
 
     Given the above parameters, the training portion of this workflow should take 3 hours to execute, including the time it takes to produce training chips from the polygons and imagery.
 
 4. Now we will instantiate the deploy_cnn_classifier task with required inputs and set the *model* input as the output of train_task. The task can classify approximately 250,000 polygons per hour.
 
-    {% highlight python %}
+    ```python
     deploy_task = gbdx.Task('deploy_cnn_classifier')
     deploy_task.inputs.model = train_task.outputs.trained_model.value     # Trained model from train_task
     deploy_task.inputs.images = join(story_prefix, 'images')
     deploy_task.inputs.geojson = join(story_prefix, 'target_geojson')
-    {% endhighlight %}
+    ```
 
 5. We can also restrict the size of polygons that we deploy on and set the appropriate bit depth for the input imagery:
 
-    {% highlight python %}
+    ```python
     deploy_task.inputs.bit_depth = '8'
     deploy_task.inputs.min_side_dim = '10'    # Minimum acceptable side dimension for a polygon
     deploy_task.inputs.classes = 'No swimming pool, Swimming pool'
-    {% endhighlight %}
+    ```
 
 6. Now we string our two tasks together in a workflow and save the output data to S3:
 
-    {% highlight python %}
+    ```python
     workflow = gbdx.Workflow([train_task, deploy_task])
     workflow.savedata(train_task.outputs.trained_model, 'your-bucket-name/train_output')
     workflow.savedata(deploy_task.outputs.classified_shapefile, 'your-bucket-name/deploy_output')
-    {% endhighlight %}
+    ```
 
 7. Finally we can execute the workflow to train and deploy our model:
 
-    {% highlight python %}
+    ```python
     workflow.execute()
-    {% endhighlight %}
+    ```
 
 8. Depending on the hyperparameters set on the model, training sizes, and size of the deploy file, this workflow can take several hours to run. You may check on the status periodically with the following commands:
 
-    {% highlight python %}
+    ```python
     workflow.status
     workflow.events # a more in-depth summary of the workflow status
-    {% endhighlight %}
+    ```
 
 9. If you'd like to explore the workflow outputs you may download samples from train_cnn_classifier and deploy_cnn_classifier by executing the following commands:
 
-    {% highlight python %}
+    ```python
     # train_cnn_classifier sample output: final model
     mkdir train_output
     gbdx.s3.download('platform_stories/swimming_pools/train_output/model_architecture.json', 'train_output/')
@@ -195,7 +195,7 @@ Now that we have an understanding of how the train and deploy workflow operates,
 
     #deploy_cnn_classifier sample output
     gbdx.s3.download('platform_stories/swimming_pools/deploy_output/')
-    {% endhighlight %}
+    ```
 
 ### Visualizing the Results
 
