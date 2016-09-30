@@ -46,41 +46,44 @@ Before executing the workflow, the raw image has to be ordered from the factory 
 
 #### Workflow Inputs
 
-The workflow requires three input directories. These can be found on S3 under the platform_stories/swimming_pools bucket.
+The workflow requires the following inputs:
 
-<b>train_geojson</b>: The name of the directory where [*train.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson) is stored. This directory name is required as input by the training task train_cnn_classifier.
+<b>[*train.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson)</b>: A collection of labeled properties in geojson format.
 
 ![train_geojson.png]({{ site.baseurl }}/images/swimming-pools/train_geojson.png)  
 
-<b>target_geojson</b>: The name of the directory where [*target.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson) is stored. This directory name is required as input by the deploy task deploy_cnn_classifier.
+<b>[*target_geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson)</b>: A collection of unlabeled properties in geojson format.
 
 ![deploy_data.png]({{ site.baseurl }}/images/swimming-pools/deploy_data.png)  
 
-<b>images</b>: The name of the directory where image files required by train_cnn_classifier and deploy_cnn_classifier are stored. The images should be in [GeoTiff](https://en.wikipedia.org/wiki/GeoTIFF) format. The required format is catalog_id.tif. In this example, we have only one image, *1040010014800C00.tif*.
+<b>*1040010014800C00.tif*</b>: The image on which the properties are found in [GeoTiff](https://en.wikipedia.org/wiki/GeoTIFF) format.
 
 ![strip.png]({{ site.baseurl }}/images/swimming-pools/strip.png)  
 *Imagery strip containing pixel data for each polygon in train.geojson and target.geojson.*
 
-Both tasks accept string inputs in addition to the directory inputs listed above. These inputs include class names, training hyper-parameters, and deploy restrictions. See the [docs](https://github.com/PlatformStories/swimming-pools/tree/master/cnn_classifier_tasks/docs) for a full list of inputs.
+For those of you with GBDX access, these files have been placed in the directories
+train_geojson/, target_geojson/, images/ under platform_stories/swimming_pools.
 
 #### Tasks
 
 The following two GBDX tasks comprise the workflow. They are linked by the trained model, which can be fed directly as input to deploy_cnn_classifier from the output of train_cnn_classifier.
 
-<b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: A task to train a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model, which can be saved to an s3 location as well as fed to deploy_cnn_classifier.
+<b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: Trains a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model.
 
 ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
  *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
 
-<b>[deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: A task to deploy a trained CNN model on *target.geojson*. The task requires a trained model, *target.geojson*, and associated image strips, and returns *classified.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
+<b>[deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: Deploys a trained CNN model on *target.geojson*. Requires a trained model, *target.geojson*, and associated image strips, and returns *classified.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
 
 ![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
 *deploy_cnn_classifier takes a model, target.geojson and imagery, and produces classified.geojson.*
 
+More information on these tasks can be found [here](https://github.com/PlatformStories/swimming-pools/tree/master/cnn_classifier_tasks/docs) for more information.
+
 
 #### Workflow Outputs
 
-<b>trained_model</b>: This is the output of the train_cnn_classifier task. It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report. The structure of the output directory is detailed below.
+<b>trained_model</b>: This is the output of train_cnn_classifier. It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report. It has the following structure:
 
     /trained_model
             ├── model_arch.json
@@ -92,22 +95,28 @@ The following two GBDX tasks comprise the workflow. They are linked by the train
                 └── round_2
                     └── weights after each epoch  
 
-The classifier is a [trained keras model](https://keras.io/models/about-keras-models/). You can find information on the model [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn)
+The model is in the format of a [trained keras model](https://keras.io/models/about-keras-models/). You can find information on the model [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn)
 
 <b>classified.geojson</b>: *classified.geojson* includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'.
 
 ![classified_shapefile.png]({{ site.baseurl }}/images/swimming-pools/classified_shapefile.png)  
 *A sample of properties in classified.geojson.*
 
+For those of you with GBDX access, trained_model can be found under platform_stories/swimming_pools
+and classified.geojson under platform_stories/swimming_pools/deploy_output.
+
+
 ### Executing the Workflow
 
-We'll now put everything together in gbdxtools.
+We'll now execute the workflow in gbdxtools.  
 
 Start an iPython terminal, create a GBDX interface, and get the input location information:
 
 ```python
 from gbdxtools import Interface
 from os.path import join
+import random
+import string
 
 gbdx = Interface()
 bucket = gbdx.s3.info['bucket']
@@ -154,12 +163,16 @@ deploy_task.inputs.min_side_dim = '10'    # Minimum acceptable side dimension fo
 deploy_task.inputs.classes = 'No swimming pool, Swimming pool'
 ```
 
-String the two tasks together in a workflow and save the output data to S3:
+String the two tasks together in a workflow and save the output in a randomly specified
+directory under platform_stories/swimming_pools/user_outputs:
 
 ```python
 workflow = gbdx.Workflow([train_task, deploy_task])
-workflow.savedata(train_task.outputs.trained_model, 'your-bucket-name/train_output')
-workflow.savedata(deploy_task.outputs.classified_shapefile, 'your-bucket-name/deploy_output')
+# create unique location name to save output
+output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
+output_loc = join('platform_stories/swimming_pools/user_outputs', output_str)
+workflow.savedata(train_task.outputs.trained_model, join(output_loc, train_output))
+workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_loc, deploy_output))
 ```
 
 Execute the workflow:
@@ -175,7 +188,7 @@ workflow.status
 workflow.events # a more in-depth summary of the workflow status
 ```
 
-You can explore the workflow outputs as follows:
+If you can't wait, you can download the sample outputs as follows:
 
 ```python
 # train_cnn_classifier sample output: final model
