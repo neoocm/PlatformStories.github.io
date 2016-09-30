@@ -31,11 +31,13 @@ Our GBDX workflow is shown in the following figure.
 #### Preprocessing
 
 The workflow begins with the file [*properties.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/my_map.html) by entering your GBDX token when prompted. The token can be found in the *.gbdx-config* file in your root directory. Alternatively, you can open a Python terminal and use gbxtools to get the token as follows:
+
 ```python    
 from gbdxtools import Interface
 gbdx = Interface()
 gbdx.gbdx_connection.access_token
 ```
+
 You can also view the image thumbnail by searching for 1040010014800C00 [here](https://discover.digitalglobe.com/) and navigating to Adelaide using the map.
 
 The main idea is to label a small percentage of the property parcels using [crowdsourcing](http://www.tomnod.com/) in order to create a training set [*train.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson). We then use *train.geojson* to train a CNN-based classifier to identify the presence of a swimming pool in each of the remaining unlabeled properties of *properties.geojson* (referred to as [*target.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson)). For object classification at a continental or global scale this procedure is a must; it would be virtually impossible to label millions of properties manually in a reasonable amount of time.
@@ -80,15 +82,15 @@ The following two GBDX tasks comprise the workflow. They are linked by the train
 
 <b>trained_model</b>: This is the output of the train_cnn_classifier task. It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report. The structure of the output directory is detailed below.
 
-        /trained_model
-                ├── model_arch.json
-                ├── model_weights.h5
-                ├── test_report.txt
-                └── model_weights
-                    ├── round_1
-                    │   └── weights after each epoch
-                    └── round_2
-                        └── weights after each epoch  
+    /trained_model
+            ├── model_arch.json
+            ├── model_weights.h5
+            ├── test_report.txt
+            └── model_weights
+                ├── round_1
+                │   └── weights after each epoch
+                └── round_2
+                    └── weights after each epoch  
 
 The classifier is a [trained keras model](https://keras.io/models/about-keras-models/). You can find information on the model [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn)
 
@@ -102,6 +104,7 @@ The classifier is a [trained keras model](https://keras.io/models/about-keras-mo
 We'll now put everything together in gbdxtools.
 
 1. Begin by starting up an iPython terminal, creating a GBDX interface, and getting the input location information:
+
 ```python
 from gbdxtools import Interface
 from os.path import join
@@ -113,14 +116,18 @@ prefix = gbdx.s3.info['prefix']
 # specify location of files needed in this story
 story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'swimming_pools')
 ```
+
 2. Create a train_task object and set the required inputs:
+
 ```python
 train_task = gbdx.Task('train_cnn_classifier')
 train_task.inputs.images = join(story_prefix, 'images')
 train_task.inputs.geojson = join(story_prefix, 'train_geojson')
 train_task.inputs.classes = 'No swimming pool, Swimming pool'     # Classes exactly as they appear in train.geojson
 ```
+
 3. In training our model, we can set optional hyper-parameter. See the [docs](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md) for detailed information. Training should take around 3 hours to complete.
+
 ```python
 train_task.inputs.nb_epoch = '30'
 train_task.inputs.nb_epoch_2 = '5'
@@ -129,35 +136,47 @@ train_task.inputs.train_size_2 = '2500'
 train_task.inputs.test_size = '1000'
 train_task.inputs.bit_depth = '8'         # Provided imagery is dra'd
 ```  
+
 4. Create a deploy_task object with the required inputs, and set the *model* input as the output of train_task. 
+
 ```python
 deploy_task = gbdx.Task('deploy_cnn_classifier')
 deploy_task.inputs.model = train_task.outputs.trained_model.value     # Trained model from train_task
 deploy_task.inputs.images = join(story_prefix, 'images')
 deploy_task.inputs.geojson = join(story_prefix, 'target_geojson')
 ```
+
 5. We can also restrict the size of polygons that we deploy on and set the appropriate bit depth for the input imagery:
+
 ```python
 deploy_task.inputs.bit_depth = '8'
 deploy_task.inputs.min_side_dim = '10'    # Minimum acceptable side dimension for a polygon
 deploy_task.inputs.classes = 'No swimming pool, Swimming pool'
 ```
+
 6. String the two tasks together in a workflow and save the output data to S3:
+
 ```python
 workflow = gbdx.Workflow([train_task, deploy_task])
 workflow.savedata(train_task.outputs.trained_model, 'your-bucket-name/train_output')
 workflow.savedata(deploy_task.outputs.classified_shapefile, 'your-bucket-name/deploy_output')
 ```
+
 7. Execute the workflow:
+
 ```python
 workflow.execute()
 ```
+
 8. Depending on the hyperparameters set on the model, training sizes, and size of the deploy file, this workflow can take several hours to run. You may check on the status periodically with the following commands:
+
 ```python
 workflow.status
 workflow.events # a more in-depth summary of the workflow status
 ```
+
 9. You can explore the workflow outputs as follows:
+
 ```python
 # train_cnn_classifier sample output: final model
 mkdir train_output
