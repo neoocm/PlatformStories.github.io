@@ -94,7 +94,7 @@ The following two GBDX tasks comprise the workflow. They are linked by the train
 
 The classifier is a [trained keras model](https://keras.io/models/about-keras-models/). You can find information on the model [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn)
 
-<b>classified.geojson</b>: This is the output of the deploy_cnn_classifier task. It is simply the results of deploying the model on *target.geojson*. This output directory contains the file *classified.geojson*, which includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'. Neat!
+<b>classified_shapefile</b>: This is the output of the deploy_cnn_classifier task. It is a directory which contains the file *classified.geojson*, which includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'. Neat!
 
 ![classified_shapefile.png]({{ site.baseurl }}/images/swimming-pools/classified_shapefile.png)  
 *A sample of properties in classified.geojson.*
@@ -104,7 +104,7 @@ The classifier is a [trained keras model](https://keras.io/models/about-keras-mo
 We'll now put everything together in gbdxtools.
 
 Start an iPython terminal, create a GBDX interface, and get the input location information:
-    
+
 ```python
 from gbdxtools import Interface
 from os.path import join
@@ -137,7 +137,7 @@ train_task.inputs.test_size = '1000'
 train_task.inputs.bit_depth = '8'         # Provided imagery is dra'd
 ```  
 
-Create a deploy_task object with the required inputs, and set the *model* input as the output of train_task. 
+Create a deploy_task object with the required inputs, and set the *model* input as the output of train_task.
 
 ```python
 deploy_task = gbdx.Task('deploy_cnn_classifier')
@@ -213,7 +213,7 @@ obtained, it can be deployed on properties over hundreds of different images
 ![scale.png]({{ site.baseurl }}/images/swimming-pools/scale.png)
 *GBDX allows large scale parallelization.*  
 
-In order to exploit the power of GBDX, an algorithm must be packaged into a GBDX task. 
+In order to exploit the power of GBDX, an algorithm must be packaged into a GBDX task.
 The procedure is described [here](https://platformstories.github.io/create-task) in detail.
 You can find more information on the algorithm used in this example
 [here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
