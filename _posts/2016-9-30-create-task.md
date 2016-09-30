@@ -174,9 +174,12 @@ Before creating your image [sign up](https://hub.docker.com/) for a DockerHub ac
 Before choosing an image to work with, you should choose an operating system and have a list of the libraries your task requires. hello-gbdx requires Python to run, so we will look for a simple base image with Python packages installed. Note that unnecessary libraries and packages will only slow down our container and the task will consequently take longer to run. There are many publicly available images that you can [search](https://docs.docker.com/engine/tutorials/dockerrepos/#searching-for-images) through on DockerHub, so chances are you'll be able to find one that suits your needs. Note that you may install additional dependencies on the image once you've pulled it from DockerHub, so it is not necessary to find one with all of the the required libraries.   
 
 Below is a list of images that may be useful to you:
-* **[ubuntu](https://hub.docker.com/r/library/ubuntu/)**: A basic image with an Ubuntu OS and a good starting point for very simple tasks. This can be configured further once you have your own version tagged, which we will review below.
-* **[naldeborgh/gdal_base](https://hub.docker.com/r/naldeborgh/gdal_base/)**: An image with Ubuntu 14.04 and GDAL v.1.10.1. (See the repo for a complete list of packages installed.)
-* **[naldeborgh/python_vim](https://hub.docker.com/r/naldeborgh/python_vim/)**: An image with Ubuntu 14.04, Python libraries and vim.
+
+- **[ubuntu](https://hub.docker.com/r/library/ubuntu/)**: A basic image with an Ubuntu OS and a good starting point for very simple tasks. This can be configured further once you have your own version tagged, which we will review below.
+
+- **[naldeborgh/gdal_base](https://hub.docker.com/r/naldeborgh/gdal_base/)**: An image with Ubuntu 14.04 and GDAL v.1.10.1. (See the repo for a complete list of packages installed.)
+
+- **[naldeborgh/python_vim](https://hub.docker.com/r/naldeborgh/python_vim/)**: An image with Ubuntu 14.04, Python libraries and vim.
 
 Since hello-gbdx only requires Python we will use naldeborgh/python_vim as our base image. In the following steps you will pull this image from its DockerHub repository, tag your own version for editing, and push the new image up to your own DockerHub account:
 
