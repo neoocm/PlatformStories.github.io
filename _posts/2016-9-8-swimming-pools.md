@@ -106,7 +106,7 @@ Now that we have an understanding of how the train and deploy workflow operates,
 
 1. Begin by starting up an iPython terminal, creating a GBDX interface, and getting the input location information:
 
-    {% highlight python %}    
+    ```python
     from gbdxtools import Interface
     from os.path import join
 
@@ -116,7 +116,7 @@ Now that we have an understanding of how the train and deploy workflow operates,
 
     # specify location of files needed in this story
     story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'swimming_pools')
-    {% endhighlight %}
+    ```
 
 2. Now we may instantiate the train_cnn_classifier task and set the required inputs:
 
