@@ -67,12 +67,12 @@ Both tasks accept string inputs in addition to the directory inputs listed above
 
 The following two GBDX tasks comprise the workflow. They are linked by the trained model, which can be fed directly as input to deploy_cnn_classifier from the output of train_cnn_classifier.
 
-<b>[train_cnn_classifier]</b>(https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: A task to train a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model, which can be saved to an s3 location as well as fed to deploy_cnn_classifier.
+<b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: A task to train a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model, which can be saved to an s3 location as well as fed to deploy_cnn_classifier.
 
 ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
  *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
 
-<b>[deploy_cnn_classifier]</b>(https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: A task to deploy a trained CNN model on *target.geojson*. The task requires a trained model, *target.geojson*, and associated image strips, and returns *classified.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
+<b>[deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: A task to deploy a trained CNN model on *target.geojson*. The task requires a trained model, *target.geojson*, and associated image strips, and returns *classified.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
 
 ![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
 *deploy_cnn_classifier takes a model, target.geojson and imagery, and produces classified.geojson.*
