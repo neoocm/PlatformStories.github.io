@@ -66,20 +66,18 @@ Both tasks accept string inputs in addition to the directory inputs listed above
 
 The following two GBDX tasks comprise the workflow. They are linked by the trained model, which can be fed directly as input to deploy_cnn_classifier from the output of train_cnn_classifier.
 
-1. <b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: A task to train a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model, which can be saved to an s3 location as well as fed to deploy_cnn_classifier.
+<b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: A task to train a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model, which can be saved to an s3 location as well as fed to deploy_cnn_classifier.
 
-    ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
-    *Basic structure of the train_cnn_classifier task. Takes train.geojson and imagery, produces a trained CNN classifier.*
+![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
+ *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
 
-2. <b>[deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: A task to deploy a trained CNN model on *target.geojson*. The task requires a trained model, *target.geojson*, and associated image strips. The task returns a classified version of *target.geojson*.
+[deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: A task to deploy a trained CNN model on *target.geojson*. The task requires a trained model, *target.geojson*, and associated image strips, and returns a classified version of *target.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
 
-    ![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
-    *Basic structure of the deploy_cnn_classifier task. Takes a model, target.geojson, and imagery; produces classified.geojson.*
+![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
+*deploy_cnn_classifier takes a model, target.geojson and imagery, and produces classified.geojson.*
 
 
 #### Workflow Outputs
-
-Each task in the workflow produces its own output, both of which are summarized below:
 
 1. <b>trained_model</b>: This is the output of the train_cnn_classifier task. It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report. The structure of the output directory is detailed below.
 
@@ -118,7 +116,7 @@ Now that we have an understanding of how the train and deploy workflow operates,
     story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'swimming_pools')
     ```
 
-2. Now we may instantiate the train_cnn_classifier task and set the required inputs:
+2. Create a train_task object and set the required inputs:
 
     ```python
     train_task = gbdx.Task('train_cnn_classifier')
@@ -140,7 +138,7 @@ Now that we have an understanding of how the train and deploy workflow operates,
 
     Given the above parameters, the training portion of this workflow should take 3 hours to execute, including the time it takes to produce training chips from the polygons and imagery.
 
-4. Now we will instantiate the deploy_cnn_classifier task with required inputs and set the *model* input as the output of train_task. The task can classify approximately 250,000 polygons per hour.
+4. Create a deploy_task object with the required inputs, and set the *model* input as the output of train_task. 
 
     ```python
     deploy_task = gbdx.Task('deploy_cnn_classifier')
@@ -165,7 +163,7 @@ Now that we have an understanding of how the train and deploy workflow operates,
     workflow.savedata(deploy_task.outputs.classified_shapefile, 'your-bucket-name/deploy_output')
     ```
 
-7. Finally we can execute the workflow to train and deploy our model:
+7. Execute the workflow:
 
     ```python
     workflow.execute()
