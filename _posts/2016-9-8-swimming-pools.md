@@ -81,7 +81,7 @@ More information on these tasks can be found [here](https://github.com/PlatformS
 
 #### Workflow Outputs
 
-<b>trained_model</b>: This is the output of train_cnn_classifier. It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report. It has the following structure:
+<b>trained_model</b>: A [trained keras model](https://keras.io/models/about-keras-models/). It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report, with the following structure:
 
     /trained_model
             ├── model_arch.json
@@ -93,7 +93,7 @@ More information on these tasks can be found [here](https://github.com/PlatformS
                 └── round_2
                     └── weights after each epoch  
 
-The model is in the format of a [trained keras model](https://keras.io/models/about-keras-models/). You can find information on the model [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn)
+More information on the model architecture can be found [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
 
 <b>classified.geojson</b>: *classified.geojson* includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'.
 
