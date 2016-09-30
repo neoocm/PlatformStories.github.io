@@ -66,8 +66,6 @@ train_geojson/, target_geojson/, images/ under platform_stories/swimming_pools.
 
 #### Tasks
 
-The following two GBDX tasks comprise the workflow. They are linked by the trained model, which can be fed directly as input to deploy_cnn_classifier from the output of train_cnn_classifier.
-
 <b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: Trains a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model.
 
 ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
