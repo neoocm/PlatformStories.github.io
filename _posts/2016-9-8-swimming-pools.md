@@ -219,7 +219,7 @@ You can visualize the classification results [here]({{ site.baseurl }}/pages/swi
 ![vis_example.png]({{ site.baseurl }}/images/swimming-pools/vis_example.png)  
 *Sample results of our workflow. Properties containing pools are outlined in green.*
 
-For this visualization, we used the [geojson-vt](https://github.com/mapbox/geojson-vt) library developed by Mapbox to slice the GeoJSON data into vector tiles on the fly. Pretty cool!
+For this visualization, we used the [geojson-vt](https://github.com/mapbox/geojson-vt) library developed by Mapbox to slice *classified.geojson* into vector tiles on the fly. Pretty cool!
 
 
 ### Discussion
