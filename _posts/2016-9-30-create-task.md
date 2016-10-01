@@ -37,7 +37,7 @@ When a workflow is executed, tasks are scheduled appropriately by a **scheduler*
 
 ## Hello GBDX
 
-In this section, we will write a Python script for our Hello GBDX task: 'hello-gbdx'.
+In this section, we will write a Python script for our Hello GBDX task, hello-gbdx.
 The script [*hello_gbdx.py*](https://github.com/kostasthebarbarian/platform_stories/blob/master/create_task/hello-gbdx/code/hello_gbdx.py) (not to be confused with the task name 'hello-gbdx')
 does the following: it obtains a list of the task input files and prints this list
 in the file *out.txt*, along with a user defined message.
