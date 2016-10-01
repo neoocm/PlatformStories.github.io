@@ -46,20 +46,23 @@ Before executing the workflow, the raw image has to be ordered from the factory 
 
 #### Workflow Inputs
 
-The workflow requires the following inputs:
+The workflow requires three inputs.
 
-<b>[*train.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson)</b>: A collection of labeled properties in geojson format.
+- A collection of labeled polygons in geojson format (the training data). In this example, the labeled properties are found in
+*train.geojson*(https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson).
 
 ![train_geojson.png]({{ site.baseurl }}/images/swimming-pools/train_geojson.png)  
+*A sample of labeled properties.*
 
-<b>[*target_geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson)</b>: A collection of unlabeled properties in geojson format.
+- A collection of polygons which will be classified, in geojson format (the target data). In this example, the properties to be classified are found in *target.geojson*(https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson).
 
 ![deploy_data.png]({{ site.baseurl }}/images/swimming-pools/deploy_data.png)  
+*A sample of properties to be classified.*
 
-<b>*1040010014800C00.tif*</b>: The image on which the properties are found in [GeoTiff](https://en.wikipedia.org/wiki/GeoTIFF) format.
+- The image(s) which the polygons in the training and target data overlay, in [GeoTiff](https://en.wikipedia.org/wiki/GeoTIFF) format. In this example, this is one image of Adelaide, *1040010014800C00.tif*.
 
 ![strip.png]({{ site.baseurl }}/images/swimming-pools/strip.png)  
-*Imagery strip containing pixel data for each polygon in train.geojson and target.geojson.*
+*Adelaide image strip, courtesy of WorldView-03.*
 
 For those of you with GBDX access, these files have been placed in the directories
 train_geojson/, target_geojson/, images/ under platform_stories/swimming_pools.
