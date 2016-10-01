@@ -92,15 +92,15 @@ The name of the input directory is obtained using the ```get_input_data_port``` 
 # Get inputs
 input_dir = self.get_input_data_port('data_in')
 ```
-*data_in* is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'. When the task is executed by the GBDX worker, the contents of the location on S3 specified by the value of *data_in* are copied onto the Docker container under mnt/work/input/data_in.
+data_in is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'. When the task is executed by the GBDX worker, the contents of the location on S3 specified by the value of *data_in* are copied onto the Docker container under mnt/work/input/data_in.
 
-The **value** of *message* is obtained using the ```get_input_string_port``` function (also inherited from **GbdxTaskInterface**).  
+The value of the input string port message is obtained using the ```get_input_string_port``` function (also inherited from **GbdxTaskInterface**).  
 
 ```python
 message = self.get_input_string_port('message', default='No message!')
 ```
 
-*message* is one of possibly many task **string input ports**. What ```get_input_string_port('message', default='No message!')``` does behind the scenes is read the value of the *message* port from the file *ports.json* which is found under mnt/work/input/. (Keep in mind that you don't have to worry about these inner workings if you don't want to!) If the value is not specified, it returns a default value.
+message is one of possibly many task **string input ports**. What ```get_input_string_port('message', default='No message!')``` does behind the scenes is read the value of message from the file *ports.json* which is found under mnt/work/input/. (Keep in mind that you don't have to worry about these inner workings if you don't want to!) If the value is not specified, it returns a default value.
 
 The name of the output directory is obtained using the ```get_output_data_port``` function (inherited from **GbdxTaskInterface**) and the output directory is created.  
 
@@ -110,7 +110,7 @@ output_dir = self.get_output_data_port('data_out')
 os.makedirs(output_dir)
 ```
 
-*data_out* is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by the value of *data_out*. Note that this value can be equal to the value of the input port of another task; this is how tasks as chained together. Moreover, note that **it is the responsibility of the script** to create the output directory.
+data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by the value of data_out. Note that this value can be equal to the value of the input port of another task; this is how tasks as chained together. Moreover, note that **it is the responsibility of the script** to create the output directory.
 
 *out.txt* is created and saved in the output directory:
 
@@ -503,7 +503,7 @@ We review the four parts of this definition below.
 ```
 
 - <b>name</b>: The input port name.
-- <b>type</b>: The input port type. Currently the only options are 'directory' and 'string'. A directory input port is used to point to an S3 where input files are stored. A string input port is used to port is used to pass a string parameter to the task. Note that *integers, floats and booleans* must all be provided to a task in string format!
+- <b>type</b>: The input port type. Currently the only options are 'directory' and 'string'. A directory input port is used to point to an S3 where input files are stored. A string input port is used to port is used to pass a string parameter to the task. Note that integers, floats and booleans must all be provided to a task in string format!
 - <b>description</b>: Description of the input port.
 - <b>required</b>: A boolean. 'true'/'false' indicate required/optional input, respectively.
 
@@ -618,7 +618,7 @@ In this example, we will create the task 'rf-pool-classifier' that trains a [ran
 ![rf_img.png]({{ site.baseurl }}/images/create-task/rf_img.png)
 *Figure 4: Inputs and output of rf-pool-classifier.*
 
-rf-pool-classifier has two directory input ports: *geojson* and *image*. Within the S3 locations specified by *geojson* and *image* the task expects to find a file *train.geojson*, which contains labeled polygons from both classes, and a tif image file from which the task will extract the pixels corresponding to each polygon, respectively (Figure 4). The task also has the input string port *n_estimators* that determines the number of trees in the random forest; specifying a value is optional and the default is '100'. The task produces a trained model in [pickle](https://docs.python.org/2/library/pickle.html) format, which is saved under the S3 location specified by the output port *trained_classifier*.
+rf-pool-classifier has two directory input ports: geojson and image. Within the S3 locations specified by geojson and image the task expects to find a file *train.geojson*, which contains labeled polygons from both classes, and a tif image file from which the task will extract the pixels corresponding to each polygon, respectively (Figure 4). The task also has the input string port n_estimators that determines the number of trees in the random forest; specifying a value is optional and the default is '100'. The task produces a trained model in [pickle](https://docs.python.org/2/library/pickle.html) format, which is saved in the S3 location specified by the output port trained_classifier.
 
 #### The Code
 
@@ -720,7 +720,7 @@ output_dir = self.get_output_data_port('trained_classifier')
 os.makedirs(output_dir)
 ```
 
-Using the ```mltools.data_extractors``` modules, the pixels corresponding to each polygon in *train.geojson* are extracted and stored in a masked numpy array. For each array, a 4-dim feature vector is computed by the function ```features.pool_basic``` and stored in the list *X*.
+Using the ```mltools.data_extractors``` modules, the pixels corresponding to each polygon in *train.geojson* are extracted and stored in a masked numpy array. For each array, a 4-dim feature vector is computed by the function ```features.pool_basic``` and stored in the list X.
 
 ```python
 # Get training data from the geojson input
@@ -733,7 +733,7 @@ for raster in train_rasters:
     X.append(compute_features(raster))
 ```
 
-We create an instance of the [sklearn Random Forest Classifier class](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html) and train it using *X* and corresponding labels.  
+We create an instance of the [sklearn Random Forest Classifier class](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html) and train it using X and corresponding labels.  
 
 ```python
 # Create classifier object.
@@ -835,7 +835,7 @@ The DockerFile and scripts can be found [here](https://github.com/kostasthebarba
 
 We can now test rf-pool-classifier-docker-image on our local machine before defining rf-pool-classifier and registering it on the platform. Just as in the case of [hello-gbdx](#testing-a-docker-image), we will mimic the platform by mounting sample input to a container and then executing *rf_pool_classifier.py*.
 
-Create the directory rf_pool_classifier_test in which to download the task inputs from S3. You will need subdirectories for *geojson* and *image*.
+Create the directory rf_pool_classifier_test in which to download the task inputs from S3. You will need subdirectories for geojson and image.
 
 ```bash
 # create input port directories
@@ -965,7 +965,7 @@ prefix = gbdx.s3.info['prefix']
 story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'create_task', 'rf_pool_classifier')
 ```
 
-Create an *rf_task* object and specify the inputs.
+Create an rf_task object and specify the inputs.
 
 ```python
 rf_task = gbdx.Task('rf-pool-classifier')
@@ -1261,12 +1261,12 @@ We are going to use the tools we created [above](#using-the-gpu) to create the t
 ![train_cnn_task.png]({{ site.baseurl }}/images/create-task/train_cnn_task.png)
 *Figure 5: Inputs and output of train-cnn.*
 
-train-cnn has one directory input directory port [*train_data*](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task/train-cnn/test_input/train_data). Within the S3 location specified by *train_data* the task expects to find the following two files:
+train-cnn has a single directory input port [train_data](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task/train-cnn/test_input/train_data). The task expects to find the following two files within the S3 location specified by train_data:
 
 - *X.npz*: Contains the training images as a numpy array in [npz format](http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html). The array should have the following dimensional ordering: (num_images, num_bands, img_rows, img_cols).
 - *y.npz*: Contains a numpy array of numerical class labels for each training image in *X.npz*.
 
-train-cnn also has the optional string input ports bit_depth and nb_epoch. The former specifies the bit depth of the imagery and defaults to '8' and the latter defines the number of training epochs with a default value of '10'. The task produces a trained model in the form of a model architecture file *model_architecture.json* and a trained weights file *model_weights.h5*. These two outputs will be stored in the S3 location specified by the output port *trained_model*.
+train-cnn also has the optional string input ports bit_depth and nb_epoch. The former specifies the bit depth of the imagery and defaults to '8' and the latter defines the number of training epochs with a default value of '10'. The task produces a trained model in the form of a model architecture file *model_architecture.json* and a trained weights file *model_weights.h5*. These two outputs will be stored in the S3 location specified by the output port trained_model.
 
 #### The Code
 
@@ -1370,7 +1370,7 @@ class TrainCnn(GbdxTaskInterface):
         nb_classes = len(np.unique(y_train))
 ```
 
-Put *X_train* and *y_train* into a format that the CNN will accept during training.
+Put X_train and y_train into a format that the CNN will accept during training.
 
 ```python
 # Reshape for input to net, normalize based on bit_depth
