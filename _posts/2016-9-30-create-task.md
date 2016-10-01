@@ -92,7 +92,7 @@ The name of the input directory is obtained using the ```get_input_data_port``` 
 # Get inputs
 input_dir = self.get_input_data_port('data_in')
 ```
-data_in is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'. When the task is executed by the GBDX worker, the contents of the location on S3 specified by the value of *data_in* are copied onto the Docker container under mnt/work/input/data_in.
+data_in is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'. When the task is executed by the GBDX worker, the contents of the location on S3 specified by data_in are copied onto the Docker container under mnt/work/input/data_in.
 
 The value of the input string port message is obtained using the ```get_input_string_port``` function (also inherited from **GbdxTaskInterface**).  
 
@@ -110,7 +110,7 @@ output_dir = self.get_output_data_port('data_out')
 os.makedirs(output_dir)
 ```
 
-data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by the value of data_out. Note that this value can be equal to the value of the input port of another task; this is how tasks as chained together. Moreover, note that **it is the responsibility of the script** to create the output directory.
+data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by data_out. Note that this location can be **the same as the location specified by the input port of another task**; this is how tasks as chained together. Moreover, note that **it is the responsibility of the script** to create the output directory.
 
 *out.txt* is created and saved in the output directory:
 
