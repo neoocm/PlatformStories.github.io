@@ -102,13 +102,13 @@ The workflow has two outputs.
 
   More information on the model architecture can be found [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
 
-- classified.geojson: *classified.geojson* includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'.
+- *classified.geojson*: Includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'.
 
   ![classified_shapefile.png]({{ site.baseurl }}/images/swimming-pools/classified_shapefile.png)  
   *A sample of properties in classified.geojson.*
 
 For those of you with GBDX access, trained_model can be found under platform_stories/swimming_pools
-and classified.geojson under platform_stories/swimming_pools/deploy_output.
+and *classified.geojson* under platform_stories/swimming_pools/deploy_output.
 
 
 ### Executing the Workflow
