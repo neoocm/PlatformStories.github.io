@@ -176,8 +176,8 @@ workflow = gbdx.Workflow([train_task, deploy_task])
 # create unique location name to save output
 output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
 output_loc = join('platform_stories/swimming_pools/user_outputs', output_str)
-workflow.savedata(train_task.outputs.trained_model, join(output_loc, train_output))
-workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_loc, deploy_output))
+workflow.savedata(train_task.outputs.trained_model, join(output_loc, 'train_output'))
+workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_loc, 'deploy_output'))
 ```
 
 Execute the workflow:
