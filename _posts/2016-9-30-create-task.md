@@ -110,7 +110,7 @@ output_dir = self.get_output_data_port('data_out')
 os.makedirs(output_dir)
 ```
 
-*data_out* is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by the value of *data_out*. Note that it is the **responsibility** of the script to create the output directory.
+*data_out* is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by the value of *data_out*. Note that this value can be equal to the value of the input port of another task; this is how tasks as chained together. Moreover, note that **it is the responsibility of the script** to create the output directory.
 
 *out.txt* is created and saved in the output directory:
 
@@ -594,6 +594,9 @@ workflow.execute()
 gbdx.s3.download(join('platform_stories/create_task/hello_gbdx/user_outputs', output_str))
 ```
 
+What ```workflow.savedata``` does behind the scenes is set the value of the data_out port to output_loc.
+When the workflow completes, the contents of data_out are moved to output_loc.
+
 To delete hello-gbdx from the registry:
 
 ```python
@@ -991,7 +994,7 @@ workflow.execute()
 workflow.status
 ```
 
-Once the workflow has completed you may download the task output from the S3 location specified in step 4.
+Once the workflow has completed you may download the task output:
 
 ```python
 gbdx.s3.download(join('platform_stories/create_task/rf_pool_classifier/user_outputs/', output_str))
@@ -1624,7 +1627,7 @@ workflow.execute()
 workflow.status
 ```
 
-Once the workflow has completed you may download the task output from the S3 location specified in step 4 and play with your trained model.
+Once the workflow has completed you may download the task output and play with your trained model.
 
 ```python
 gbdx.s3.download(join('platform_stories/create_task/train_cnn/user_outputs', output_str))
