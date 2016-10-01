@@ -193,23 +193,28 @@ workflow.status
 workflow.events # a more in-depth summary of the workflow status
 ```
 
-If you can't wait, you can download the sample outputs as follows:
+If you can't wait, you can download the sample outputs that we have provided as follows.
+(The exclamation marks allow you to execute bash commands within ipython.)
 
 ```python
+
+! mkdir train_output
+
 # train_cnn_classifier sample output: final model
-mkdir train_output
 gbdx.s3.download('platform_stories/swimming_pools/train_output/model_architecture.json', 'train_output/')
 gbdx.s3.download('platform_stories/swimming_pools/train_output/model_weights.h5', 'train_output/')
 gbdx.s3.download('platform_stories/swimming_pools/train_output/test_report.txt', 'train_output/')
 
+! mkdir train_output/round_1 train_output/round_2
+
 # train_cnn_classifier sample output: weights after each epoch
-mkdir train_output/round_1
-mkdir train_output/round_2
 gbdx.s3.download('platform_stories/swimming_pools/train_output/model_weights/round_1/', 'train_output/round_1/')
 gbdx.s3.download('platform_stories/swimming_pools/train_output/model_weights/round_2/', 'train_output/round_2/')
 
-#deploy_cnn_classifier sample output
-gbdx.s3.download('platform_stories/swimming_pools/deploy_output/')
+! mkdir deploy_output
+
+# deploy_cnn_classifier sample output
+gbdx.s3.download('platform_stories/swimming_pools/deploy_output/classified.geojson', 'deploy_output/')
 ```
 
 ### Visualizing the Results
