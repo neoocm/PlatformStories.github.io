@@ -49,59 +49,63 @@ Before executing the workflow, the raw image has to be ordered from the factory 
 The workflow requires three inputs.
 
 - A collection of labeled polygons in geojson format (the training data). In this example, the labeled properties are found in
-*train.geojson*(https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson).
+[*train.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson).
 
-![train_geojson.png]({{ site.baseurl }}/images/swimming-pools/train_geojson.png)  
-*A sample of labeled properties.*
+  ![train_geojson.png]({{ site.baseurl }}/images/swimming-pools/train_geojson.png)  
+  *A sample of labeled properties.*
 
-- A collection of polygons which will be classified, in geojson format (the target data). In this example, the properties to be classified are found in *target.geojson*(https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson).
+- A collection of polygons which will be classified, in geojson format (the target data). In this example, the properties to be classified are found in [*target.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson).
 
-![deploy_data.png]({{ site.baseurl }}/images/swimming-pools/deploy_data.png)  
-*A sample of properties to be classified.*
+  ![deploy_data.png]({{ site.baseurl }}/images/swimming-pools/deploy_data.png)  
+  *A sample of properties to be classified.*
 
 - The image(s) which the polygons in the training and target data overlay, in [GeoTiff](https://en.wikipedia.org/wiki/GeoTIFF) format. In this example, this is one image of Adelaide, *1040010014800C00.tif*.
 
-![strip.png]({{ site.baseurl }}/images/swimming-pools/strip.png)  
-*Adelaide image strip, courtesy of WorldView-03.*
+  ![strip.png]({{ site.baseurl }}/images/swimming-pools/strip.png)  
+  *Adelaide image strip, courtesy of WorldView-03.*
 
 For those of you with GBDX access, these files have been placed in the directories
 train_geojson/, target_geojson/, images/ under platform_stories/swimming_pools.
 
 #### Tasks
 
-<b>[train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md)</b>: Trains a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model.
+The workflow involves two tasks.
 
-![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
- *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
+- [train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Train_CNN_Classifier.md): Trains a CNN classifier on the polygons in *train.geojson*. Required inputs are *train.geojson*, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model.
 
-<b>[deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md)</b>: Deploys a trained CNN model on *target.geojson*. Requires a trained model, *target.geojson*, and associated image strips, and returns *classified.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
+   ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
+   *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
 
-![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
-*deploy_cnn_classifier takes a model, target.geojson and imagery, and produces classified.geojson.*
+- [deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/docs/Deploy_CNN_Classifier.md): Deploys a trained CNN model on *target.geojson*. Requires a trained model, *target.geojson*, and associated image strips, and returns *classified.geojson*. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
+
+  ![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
+  *deploy_cnn_classifier takes a model, target.geojson and imagery, and produces classified.geojson.*
 
 More information on these tasks can be found [here](https://github.com/PlatformStories/swimming-pools/tree/master/cnn_classifier_tasks/docs).
 
 
 #### Workflow Outputs
 
-<b>trained_model</b>: A [trained keras model](https://keras.io/models/about-keras-models/). It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report, with the following structure:
+The workflow has two outputs.
 
-    /trained_model
-            ├── model_arch.json
-            ├── model_weights.h5
-            ├── test_report.txt
-            └── model_weights
-                ├── round_1
-                │   └── weights after each epoch
-                └── round_2
-                    └── weights after each epoch  
+- trained_model: A [trained keras model](https://keras.io/models/about-keras-models/). It is a directory containing the weights and architecture of the trained model, model weights after each epoch, and a test report, with the following structure:
 
-More information on the model architecture can be found [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
+      /trained_model
+              ├── model_arch.json
+              ├── model_weights.h5
+              ├── test_report.txt
+              └── model_weights
+                  ├── round_1
+                  │   └── weights after each epoch
+                  └── round_2
+                      └── weights after each epoch  
 
-<b>classified.geojson</b>: *classified.geojson* includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'.
+  More information on the model architecture can be found [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
 
-![classified_shapefile.png]({{ site.baseurl }}/images/swimming-pools/classified_shapefile.png)  
-*A sample of properties in classified.geojson.*
+- classified.geojson: *classified.geojson* includes all the properties in *target.geojson* classified into 'Swimming pool' and 'No swimming pool'.
+
+  ![classified_shapefile.png]({{ site.baseurl }}/images/swimming-pools/classified_shapefile.png)  
+  *A sample of properties in classified.geojson.*
 
 For those of you with GBDX access, trained_model can be found under platform_stories/swimming_pools
 and classified.geojson under platform_stories/swimming_pools/deploy_output.
