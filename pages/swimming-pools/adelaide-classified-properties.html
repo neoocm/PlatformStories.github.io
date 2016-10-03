@@ -44,7 +44,7 @@
 	 });
 	 </script>
    <script>
-
+	 			var token = localStorage.getItem('idToken');
         $("#target").on("click", function() {
 
             var map = L.map('mapid');
@@ -60,7 +60,6 @@
             }).addTo(map);
 
     		    // idaho tiles layer
-						var token = localStorage.getItem('idToken');
 						var bands = '4,2,1';
             var gamma = '1.3';
             var highCutoff = '0.98';
