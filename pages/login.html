@@ -6,8 +6,6 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<script src="https://cdn.auth0.com/js/lock/10.2/lock.min.js"></script>
-
 	<style>
         body {
             padding: 0;
@@ -24,7 +22,7 @@
 
 	  <script src="https://cdn.auth0.com/js/lock/10.3/lock.min.js"></script>
     <script>
-    var lock = new Auth0Lock('AUTH0_CLIENT_ID_HERE', 'AUTH0_DOMAIN_HERE', {
+    var lock = new Auth0Lock('lUHFRPH8sqWDyoKruYmRljkSHqnwI0hm', 'digitalglobe-platform.auth0.com', {
         // container: 'root',
         initialScreen: localStorage.getItem('userHasEverLoggedIn') ? 'login' : 'signUp',
         theme: {
