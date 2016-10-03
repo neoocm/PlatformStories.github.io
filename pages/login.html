@@ -35,19 +35,24 @@
             }
         }
     });
+    var onAuthenticated = function() {
+        localStorage.setItem('userHasEverLoggedIn', true);
+        window.location = localStorage.getItem('desiredUrlAfterAuth') || 'https://platformstories.github.io';
+    };
     lock.on('authenticated', function(authResult) {
         if (!authResult.idToken) return;
 
+        // We don't care about the profile, but we want to validate the token.
         lock.getProfile(authResult.idToken, function(error, profile) {
             if (error) {
                 // Handle error
-                alert(error.message || error);
+                alert(error.message || error || 'Login failed. Please try again.');
+                lock.show();
                 return;
             }
 
             localStorage.setItem('idToken', authResult.idToken);
-            localStorage.setItem('userHasEverLoggedIn', true);
-            window.location = localStorage.getItem('desiredUrlAfterAuth') || 'https://platformstories.github.io';
+            onAuthenticated();
         });
     });
     lock.on('unrecoverable_error', function(result) {
@@ -56,7 +61,21 @@
     lock.on('authorization_error', function(result) {
         alert('Error:' + result.error_description);
     });
-    lock.show();
+
+    if (localStorage.getItem('idToken')) {
+        // We don't care about the profile, but we want to validate the token.
+        lock.getProfile(localStorage.getItem('idToken') || null, function(error, profile) {
+            if (error) {
+                // Handle error
+                lock.show();
+                return;
+            }
+
+            onAuthenticated();
+        });
+    } else {
+        lock.show();
+    }
     </script>
 
 </body>
