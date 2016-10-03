@@ -34,7 +34,7 @@
      //if (!localStorage.getItem('idToken')) {
      //    onAuthenticationError();
      //} else {
-         var lock = new Auth0Lock('vhaNEJymL4m1UCo4TqXmuKtkn9JCYDkT', 'digitalglobe-platform.auth0.com');
+         var lock = new Auth0Lock('lUHFRPH8sqWDyoKruYmRljkSHqnwI0hm', 'digitalglobe-platform.auth0.com');
          lock.getProfile(localStorage.getItem('idToken') || null, function(error, profile) {
              if (error) {
                  // Handle error
