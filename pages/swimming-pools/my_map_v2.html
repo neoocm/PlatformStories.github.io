@@ -31,15 +31,10 @@
      lock.getProfile(localStorage.getItem('idToken') || null, function(error, profile) {
          if (error) {
              // Handle error
-             alert(error.message || error);
              localStorage.setItem('desiredUrlAfterAuth', window.location);
              window.location = 'https://platformstories.github.io/pages/login.html';
              return;
          }
-         
-         localStorage.setItem('idToken', authResult.idToken);
-         localStorage.setItem('userHasEverLoggedIn', true);
-         window.location = localStorage.getItem('desiredUrlAfterAuth') || 'https://platformstories.github.io';
      });
     </script>
     <script>
