@@ -20,22 +20,22 @@
             height: 100%;
             width: 100%;
         }
-    </style>
+  </style>
 
 </head>
 <body>
     <div id="mapid"></div>
-     <script>
-     // Validate the user's token.
-     var lock = new Auth0Lock('lUHFRPH8sqWDyoKruYmRljkSHqnwI0hm', 'digitalglobe-platform.auth0.com');
-     lock.getProfile(localStorage.getItem('idToken') || null, function(error, profile) {
-         if (error) {
-             // Handle error
-             localStorage.setItem('desiredUrlAfterAuth', window.location);
-             window.location = 'https://platformstories.github.io/pages/login.html';
-             return;
-         }
-     });
+    <script>
+    // Validate the user's token.
+    var lock = new Auth0Lock('lUHFRPH8sqWDyoKruYmRljkSHqnwI0hm', 'digitalglobe-platform.auth0.com');
+    lock.getProfile(localStorage.getItem('idToken') || null, function(error, profile) {
+        if (error) {
+            // Handle error
+            localStorage.setItem('desiredUrlAfterAuth', window.location);
+            window.location = 'https://platformstories.github.io/pages/login.html';
+            return;
+        }
+    });
     </script>
     <script>
 	    var token = localStorage.getItem('idToken');
