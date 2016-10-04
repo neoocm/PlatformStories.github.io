@@ -30,14 +30,7 @@ Our GBDX workflow is shown in the following figure.
 
 #### Preprocessing
 
-The workflow begins with the file [*properties.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/my_map.html) by entering your GBDX token when prompted. The token can be found in the *.gbdx-config* file in your root directory. Alternatively, you can open a Python terminal and use gbxtools to get the token as follows:
-
-```python    
-from gbdxtools import Interface
-gbdx = Interface()
-gbdx.gbdx_connection.access_token
-```
-
+The workflow begins with the file [*properties.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/adelaide.html) by entering your GBDX credentials when prompted.
 You can also view the image thumbnail by searching for 1040010014800C00 [here](https://discover.digitalglobe.com/) and navigating to Adelaide using the map.
 
 The main idea is to label a small percentage of the property parcels using [crowdsourcing](http://www.tomnod.com/) in order to create a training set [*train.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/train_cnn_classifier/train.geojson). We then use *train.geojson* to train a CNN-based classifier to identify the presence of a swimming pool in each of the remaining unlabeled properties of *properties.geojson* (referred to as [*target.geojson*](https://github.com/PlatformStories/swimming-pools/blob/master/cnn_classifier_tasks/deploy_cnn_classifier/target.geojson)). For object classification at a continental or global scale this procedure is a must; it would be virtually impossible to label millions of properties manually in a reasonable amount of time.
@@ -219,12 +212,12 @@ gbdx.s3.download('platform_stories/swimming_pools/deploy_output/classified.geojs
 
 ### Visualizing the Results
 
-You can visualize the classification results [here]({{ site.baseurl }}/pages/swimming-pools/my_map_with_vectors.html) once you have entered your GBDX token in the prompt. Green/red polygons indicate presence/absence of pool. Clicking on each polygon shows the corresponding feature id and assigned classification.  
+You can visualize the classification results [here]({{ site.baseurl }}/pages/swimming-pools/adelaide-classified-properties.html). Green/red polygons indicate presence/absence of pool. Clicking on each polygon shows the corresponding feature id and assigned classification.  
 
 ![vis_example.png]({{ site.baseurl }}/images/swimming-pools/vis_example.png)  
 *Sample results of our workflow. Properties containing pools are outlined in green.*
 
-For this visualization, we used the [geojson-vt](https://github.com/mapbox/geojson-vt) library developed by Mapbox to slice *classified.geojson* into vector tiles on the fly. Pretty cool!
+For this visualization, we used the Mapbox [geojson-vt](https://github.com/mapbox/geojson-vt) library to slice *classified.geojson* into vector tiles on the fly. Pretty cool!
 
 
 ### Discussion
