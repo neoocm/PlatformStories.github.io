@@ -7,7 +7,7 @@ permalink: /about/
 **The goal of the GBDX Platform is to become the place where Producers and Consumers
 come together to create location intelligence for our changing world.**
 
-The Geospatial Big Data X (GBDX) Platform makes computation on and visualization of our 15 year imagery
+The Geospatial Big Data (GBDX) Platform makes computation on and visualization of our 15 year imagery
 archive possible at a massive scale. These unique capabilities enable our customers to
 solve large-scale geospatial problems and to derive actionable insight based on the results.
 
