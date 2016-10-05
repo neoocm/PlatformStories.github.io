@@ -92,7 +92,7 @@ The name of the input directory is obtained using the ```get_input_data_port``` 
 # Get inputs
 input_dir = self.get_input_data_port('data_in')
 ```
-data_in is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'. When the task is executed by the GBDX worker, the contents of the location on S3 specified by data_in are copied onto the Docker container under mnt/work/input/data_in.
+data_in is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'. 
 
 The value of the input string port message is obtained using the ```get_input_string_port``` function (also inherited from **GbdxTaskInterface**).  
 
@@ -110,7 +110,7 @@ output_dir = self.get_output_data_port('data_out')
 os.makedirs(output_dir)
 ```
 
-data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'. When the task is executed by the GBDX worker, the contents of this directory are copied to the S3 location specified by data_out. Note that this location can be **the same as the location specified by the input port of another task**; this is how tasks as chained together. Moreover, note that **it is the responsibility of the script** to create the output directory.
+data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'.  Note that **it is the responsibility of the script** to create the output directory.
 
 *out.txt* is created and saved in the output directory:
 
@@ -129,6 +129,10 @@ if __name__ == "__main__":
     with HelloGbdxTask() as task:
         task.invoke()
 ```
+
+How is data input to and output from hello-gbdx when it is executed on GBDX?
+If hello-gbdx is the first in a series of tasks comprising a workflow, data_in is assigned a string value by the user which is the S3 location that contains the task input files (it will soon become apparent how to do this). These files are automatically copied to mnt/work/input/data_in of the docker container which runs *hello_gbdx.py* (we will cover docker in the next section). When the execution of *hello_gbdx.py* is concluded, *out.txt* is found in mnt/work/input/data_out of the docker container (our script explicitly saved it there). GBDX permits saving the contents of mnt/work/input/data_out
+at a user-specified S3 location, as well as feed those to the directory input port of another task in order to chain the two tasks together. If neither of those actions are performed, the contents of mnt/work/input/data_out are lost when the task executed. In this walkthrough, we will only consider single-task workflows; you can explore Platform Stories for examples of more complicated workflows involving multiple tasks.
 
 In the next section we go through the steps of creating a Docker image for hello-gbdx.
 
@@ -369,13 +373,13 @@ At this point you should have hello-gbdx-docker-image which includes *hello_gbdx
 In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/test_inputs](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task/hello-gbdx/test_inputs) in this repo contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task/hello-gbdx/test_inputs/data_in), the contents of which will be written to *out.txt* (in this example, this is simply the file *data_file.txt*) (b) the file [*ports.json*](https://github.com/kostasthebarbarian/platform_stories/tree/master/create_task/hello-gbdx/test_inputs/ports.json) which
 contains the message to be written to *out.txt*. Keep in mind that *ports.json* is automatically created by GBDX based on the task definition and the values of the string input ports provided by the user when the task is executed.
 
-Run hello-gbdx-docker-image and mount inputs to the container.
+Run hello-gbdx-docker-image and mount inputs to the container under mnt/work/input; this is where GBDX will place the inputs when the task is executed.
 
 ```bash
 docker run -v ~/path/to/hello-gbdx/test_inputs:/mnt/work/input -it <your_username>/hello-gbdx-docker-image
 ```
 
-The inputs are mounted onto the container under the directory mnt/work/input. This is where GBDX actually places the inputs specified by the input ports when the task is executed. Note the important distinction between mounting data to the container and adding data to the image using the ADD command in the Dockerfile: when you exit the container, this data 'disappears' (i.e., it is not saved onto the image).
+Note the important distinction between mounting data to the container and adding data to the image using the ADD command in the Dockerfile: when you exit the container, this data 'disappears' (i.e., it is not saved onto the image).
 
 Confirm that the inputs are mounted by exploring the container.
 
@@ -426,7 +430,7 @@ The task definition is a [json file](https://github.com/kostasthebarbarian/platf
 ```json
 {
     "name": "hello-gbdx",
-    "description": "Writes list of the  input file names and a user defined message to output file out.txt.",
+    "description": "Writes list of the input file names and a user defined message to output file out.txt.",
     "properties": {
         "isPublic": true,
         "timeout": 7200
@@ -441,7 +445,7 @@ The task definition is a [json file](https://github.com/kostasthebarbarian/platf
         {
             "name": "data_in",
             "type": "directory",
-            "description": "S3 location of input files.",
+            "description": "Input data directory.",
             "required": true
         }
     ],
@@ -449,7 +453,7 @@ The task definition is a [json file](https://github.com/kostasthebarbarian/platf
         {
             "name": "data_out",
             "type": "directory",
-            "description": "S3 location of the output file out.txt."
+            "description": "Output data directory."
         }
     ],
     "containerDescriptors": [
@@ -473,7 +477,7 @@ We review the four parts of this definition below.
 ```
 {
     "name": "hello-gbdx",
-    "description": "Writes list of the  input file names and a user defined message to output file out.txt.",
+    "description": "Writes list of the input file names and a user defined message to output file out.txt.",
     "properties": {
         "isPublic": true,
         "timeout": 7200
@@ -497,13 +501,13 @@ We review the four parts of this definition below.
     {
         "name": "data_in",
         "type": "directory",
-        "description": "S3 location of input files.",
+        "description": "Input data directory.",
         "required": true
     }
 ```
 
 - <b>name</b>: The input port name.
-- <b>type</b>: The input port type. Currently the only options are 'directory' and 'string'. A directory input port is used to point to an S3 where input files are stored. A string input port is used to port is used to pass a string parameter to the task. Note that integers, floats and booleans must all be provided to a task in string format!
+- <b>type</b>: The input port type. Currently the only options are 'directory' and 'string'. A directory input port is used to define an S3 location where input files are stored or to hook to the output directory port of a previous task. A string input port is used to pass a string parameter to the task. Note that integers, floats and booleans must all be provided to a task in string format!
 - <b>description</b>: Description of the input port.
 - <b>required</b>: A boolean. 'true'/'false' indicate required/optional input, respectively.
 
@@ -514,7 +518,7 @@ We review the four parts of this definition below.
     {
         "name": "data_out",
         "type": "directory",
-        "description": "S3 location of the output file out.txt."
+        "description": "Output data directory."
     }
 ```
 
@@ -561,7 +565,7 @@ gbdx.task_registry.register(json_filename = 'hello-gbdx_definition.json')
 
 There's a good chance that hello-gbdx already exists in the registry. You can try using a different name after appropriaterly modifying the definition.
 
-Congratulations, you have just registered hello-gbdx! You can run it with sample data we have provided on S3 as follows:
+Congratulations, you have just registered hello-gbdx! You can run it with sample data as follows. Open an ipython terminal and copy in the following: 
 
 ```python
 from gbdxtools import Interface
@@ -569,33 +573,42 @@ from os.path import join
 import string, random
 gbdx = Interface()
 
-# get input location
-bucket = gbdx.s3.info['bucket']
-prefix = gbdx.s3.info['prefix']
-story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'create_task', 'hello_gbdx')
+# specify S3 location of input files
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/create_task/hello_gbdx/data_in/'
 
-# create the task and set inputs
+# create task object
 hello_task = gbdx.Task('hello-gbdx')
-hello_task.inputs.data_in = join(story_prefix, 'data_in')
-hello_task.inputs.message = 'This is my message!'
 
-# create unique location name to save output
-output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
-output_loc = join('platform_stories/create_task/hello_gbdx/user_outputs', output_str)
+# set the value of data_in 
+hello_task.inputs.data_in = input_location
+
+# set the value fo the input string port
+hello_task.inputs.message = 'This is my message!'
 
 # define a single-task workflow
 workflow = gbdx.Workflow([hello_task])
 
-# specify location to save the output data, execute the workflow
-workflow.savedata(hello_task.outputs.data_out, output_loc)
-workflow.execute()
+# save contents of data_out in 
+# platform_stories/trial_runs/random_str within your bucket/prefix
+output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
+output_location = join('platform_stories/trial_runs', output_str)
+workflow.savedata(hello_task.outputs.data_out, output_location)
 
-# Once the workflow is complete download the output as follows:
-gbdx.s3.download(join('platform_stories/create_task/hello_gbdx/user_outputs', output_str))
+# execute the workflow
+workflow.execute()
 ```
 
-What ```workflow.savedata``` does behind the scenes is set the value of the data_out port to output_loc.
-When the workflow completes, the contents of data_out are moved to output_loc.
+You can check the status of the workflow as:
+
+```python
+workflow.status
+```
+
+When the workflow is complete, you can download *out.txt* locally as follows
+
+```python
+gbdx.s3.download(output_location)
+```
 
 To delete hello-gbdx from the registry:
 
