@@ -117,19 +117,17 @@ import random
 import string
 
 gbdx = Interface()
-bucket = gbdx.s3.info['bucket']
-prefix = gbdx.s3.info['prefix']
 
 # specify location of files needed in this story
-story_prefix = 's3://' + join(bucket, prefix, 'platform_stories', 'swimming_pools')
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/swimming_pools/inputs'
 ```
 
 Create a train_task object and set the required inputs:
 
 ```python
 train_task = gbdx.Task('train_cnn_classifier')
-train_task.inputs.images = join(story_prefix, 'images')
-train_task.inputs.geojson = join(story_prefix, 'train_geojson')
+train_task.inputs.images = join(input_location, 'images')
+train_task.inputs.geojson = join(input_location, 'train_geojson')
 train_task.inputs.classes = 'No swimming pool, Swimming pool'     # Classes exactly as they appear in train.geojson
 ```
 
@@ -149,8 +147,8 @@ Create a deploy_task object with the required inputs, and set the *model* input 
 ```python
 deploy_task = gbdx.Task('deploy_cnn_classifier')
 deploy_task.inputs.model = train_task.outputs.trained_model.value     # Trained model from train_task
-deploy_task.inputs.images = join(story_prefix, 'images')
-deploy_task.inputs.geojson = join(story_prefix, 'target_geojson')
+deploy_task.inputs.images = join(input_location, 'images')
+deploy_task.inputs.geojson = join(input_location, 'target_geojson')
 ```
 
 We can also restrict the size of polygons that we deploy on and set the appropriate bit depth for the input imagery:
@@ -162,15 +160,15 @@ deploy_task.inputs.classes = 'No swimming pool, Swimming pool'
 ```
 
 String the two tasks together in a workflow and save the output in a randomly specified
-directory under platform_stories/swimming_pools/user_outputs:
+directory under your-bucket/your-prefix/platform_stories/swimming_pools/trial_runs:
 
 ```python
 workflow = gbdx.Workflow([train_task, deploy_task])
-# create unique location name to save output
-output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
-output_loc = join('platform_stories/swimming_pools/user_outputs', output_str)
-workflow.savedata(train_task.outputs.trained_model, join(output_loc, 'train_output'))
-workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_loc, 'deploy_output'))
+# set output location to platform_stories/trial_runs/random_str within your bucket/prefix
+random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
+output_location = join('platform_stories/trial_runs', random_str)
+workflow.savedata(train_task.outputs.trained_model, join(output_location, 'train_output'))
+workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_location, 'deploy_output'))
 ```
 
 Execute the workflow:
@@ -179,14 +177,14 @@ Execute the workflow:
 workflow.execute()
 ```
 
-Depending on the hyperparameters set on the model, training sizes, and size of the deploy file, this workflow can take several hours to run. You may check on the status periodically with the following commands:
+Depending on the hyper-parameters set on the model, training sizes, and size of the deploy file, this workflow can take several hours to run. You may check on the status periodically with the following commands:
 
 ```python
 workflow.status
 workflow.events # a more in-depth summary of the workflow status
 ```
 
-If you can't wait, you can download the sample outputs that we have provided as follows.
+You can download your outputs as follows.
 (The exclamation marks allow you to execute bash commands within ipython.)
 
 ```python
@@ -194,20 +192,20 @@ If you can't wait, you can download the sample outputs that we have provided as 
 ! mkdir train_output
 
 # train_cnn_classifier sample output: final model
-gbdx.s3.download('platform_stories/swimming_pools/train_output/model_architecture.json', 'train_output/')
-gbdx.s3.download('platform_stories/swimming_pools/train_output/model_weights.h5', 'train_output/')
-gbdx.s3.download('platform_stories/swimming_pools/train_output/test_report.txt', 'train_output/')
+gbdx.s3.download(join(output_location, 'train_output/model_architecture.json'), 'train_output/')
+gbdx.s3.download(join(output_location, 'train_output/model_weights.h5'), 'train_output/')
+gbdx.s3.download(join(output_location, 'train_output/test_report.txt'), 'train_output/')
 
-! mkdir train_output/round_1 train_output/round_2
+! mkdir train_output/model_weights/round_1 train_output/model_weights/round_2
 
 # train_cnn_classifier sample output: weights after each epoch
-gbdx.s3.download('platform_stories/swimming_pools/train_output/model_weights/round_1/', 'train_output/round_1/')
-gbdx.s3.download('platform_stories/swimming_pools/train_output/model_weights/round_2/', 'train_output/round_2/')
+gbdx.s3.download(join(output_location, 'train_output/model_weights/round_1/'), 'train_output/model_weights/round_1/')
+gbdx.s3.download(join(output_location, 'train_output/model_weights/round_2/'), 'train_output/model_weights/round_2/')
 
 ! mkdir deploy_output
 
 # deploy_cnn_classifier sample output
-gbdx.s3.download('platform_stories/swimming_pools/deploy_output/classified.geojson', 'deploy_output/')
+gbdx.s3.download(join(output_location, 'deploy_output/classified.geojson'), 'deploy_output/')
 ```
 
 ### Visualizing the Results
