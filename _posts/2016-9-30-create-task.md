@@ -425,7 +425,7 @@ Now that we have hello-gbdx-docker-image working locally, we can finally define 
 
 ### Defining the Task
 
-The task definition is a [json file](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx_definition.json) that contains a description of the task functionality, a list of its inputs and outputs, and the Docker image that needs to be run when the task is executed.
+The task definition is a [json file](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-definition.json) that contains a description of the task functionality, a list of its inputs and outputs, and the Docker image that needs to be run when the task is executed.
 
 ```json
 {
@@ -546,7 +546,7 @@ We review the four parts of this definition below.
 
 ### GBDX Task Registry
 
-We now have all the required material to register hello-gbdx: [a Docker image on DockerHub](#creating-a-docker-image) and the [task definition](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx_definition.json).
+We now have all the required material to register hello-gbdx: [a Docker image on DockerHub](#creating-a-docker-image) and the [task definition](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-definition.json).
 
 Open an iPython terminal, import gbdxtools and start up a GBDX Interface.  
 
@@ -556,10 +556,10 @@ from gbdxtools import Interface
 gbdx = Interface()
 ```
 
-Call the ```register()``` method of the **TaskRegistry** class with the name of the definition JSON. (Make sure *hello-gbdx_definition.json* is in your working directory).
+Call the ```register()``` method of the **TaskRegistry** class with the name of the definition JSON. (Make sure *hello-gbdx-definition.json* is in your working directory).
 
 ```python
-gbdx.task_registry.register(json_filename = 'hello-gbdx_definition.json')
+gbdx.task_registry.register(json_filename = 'hello-gbdx-definition.json')
 >>> u'hello-gbdx successfully registered.'
 ```
 
@@ -948,14 +948,14 @@ The definition for rf-pool-classifier is provided below:
 }
 ```
 
-Put *rf-pool-classifier_definition.json* in your working directory and register rf-pool-classifier as follows:
+Put *rf-pool-classifier-definition.json* in your working directory and register rf-pool-classifier as follows:
 
 ```python
 from gbdxtools import Interface
 gbdx = Interface()
 
-# register the task using rf-pool-classifier_definition.json
-gbdx.task_registry.register(json_filename = 'rf-pool-classifier_definition.json')
+# register the task using rf-pool-classifier-definition.json
+gbdx.task_registry.register(json_filename = 'rf-pool-classifier-definition.json')
 ```
 
 #### Executing the Task
