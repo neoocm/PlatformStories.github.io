@@ -370,7 +370,7 @@ Our Docker image is now ready to be tested with sample inputs.
 ### Testing a Docker Image
 
 At this point you should have hello-gbdx-docker-image which includes *hello_gbdx.py*.
-In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/test_inputs](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/test_inputs) in this repo contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/test_inputs/data_in), the contents of which will be written to *out.txt* (in this example, this is simply the file *data_file.txt*) (b) the file [*ports.json*](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/test_inputs/ports.json) which
+In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/test_inputs in this repo](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/test_inputs) contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/test_inputs/data_in), the contents of which will be written to *out.txt* (in this example, this is simply the file *data_file.txt*) (b) the file [*ports.json*](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/test_inputs/ports.json) which
 contains the message to be written to *out.txt*. Keep in mind that *ports.json* is automatically created by GBDX based on the task definition and the values of the string input ports provided by the user when the task is executed.
 
 Run hello-gbdx-docker-image and mount inputs to the container under mnt/work/input; this is where GBDX will place the inputs when the task is executed.
@@ -1506,7 +1506,7 @@ docker pull <your_username>/train-cnn-docker-image
 Run a container from train-cnn-docker-image. This is where testing on a GPU differs from our previous tests: you must specify which GPU devices the container should use with the ```--device``` flag:
 
 ```bash
-docker run --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia0 -v ~/platform_stories/create_task/train-cnn/test_input:/mnt/work/input/ -it <your_username>/train-cnn-docker-image /bin/bash
+docker run --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia0 -v ~/PlatformStories/create-task/train-cnn/test_input:/mnt/work/input/ -it <your_username>/train-cnn-docker-image /bin/bash
 ```
 
 Run *train_cnn.py*. In this step we confirm that the container is using the GPU and that the script runs without errors.
