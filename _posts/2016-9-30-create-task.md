@@ -574,13 +574,13 @@ import string, random
 gbdx = Interface()
 
 # specify S3 location of input files
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/hello_gbdx/data_in/'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/hello-gbdx'
 
 # create task object
 hello_task = gbdx.Task('hello-gbdx')
 
 # set the value of data_in
-hello_task.inputs.data_in = input_location
+hello_task.inputs.data_in = join(input_location, 'data_in')
 
 # set the value fo the input string port
 hello_task.inputs.message = 'This is my message!'
@@ -862,7 +862,7 @@ from gbdxtools import Interface
 from os.path import join
 gbdx = Interface()
 
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf_pool_classifier'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf-pool-classifier'
 
 # download the image strip (will take a couple minutes)
 gbdx.s3.download(join(input_location, 'image'), './image/')
@@ -973,7 +973,7 @@ bucket = gbdx.s3.info['bucket']
 prefix = gbdx.s3.info['prefix']
 
 # specify location
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf_pool_classifier'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf-pool-classifier'
 ```
 
 # Create an rf_task object and specify the inputs.
@@ -1599,7 +1599,7 @@ import random, string
 
 gbdx = Interface()
 
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/train_cnn'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/train-cnn'
 ```
 
 Create a cnn_task object and specify the inputs.
