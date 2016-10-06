@@ -574,7 +574,7 @@ import string, random
 gbdx = Interface()
 
 # specify S3 location of input files
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/create_task/hello_gbdx/data_in/'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/hello_gbdx/data_in/'
 
 # create task object
 hello_task = gbdx.Task('hello-gbdx')
@@ -588,10 +588,9 @@ hello_task.inputs.message = 'This is my message!'
 # define a single-task workflow
 workflow = gbdx.Workflow([hello_task])
 
-# save contents of data_out in
-# platform_stories/trial_runs/random_str within your bucket/prefix
+# save contents of data_out in platform-stories/trial-runs/random_str within your bucket/prefix
 output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
-output_location = join('platform_stories/trial_runs', output_str)
+output_location = join('platform-stories/trial-runs', output_str)
 workflow.savedata(hello_task.outputs.data_out, output_location)
 
 Execute the workflow and monitor its status as follows:
@@ -863,7 +862,7 @@ from gbdxtools import Interface
 from os.path import join
 gbdx = Interface()
 
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/create_task/rf_pool_classifier'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf_pool_classifier'
 
 # download the image strip (will take a couple minutes)
 gbdx.s3.download(join(input_location, 'image'), './image/')
@@ -961,7 +960,6 @@ gbdx.task_registry.register(json_filename = 'rf-pool-classifier-definition.json'
 #### Executing the Task
 
 We will now run through a sample execution of rf-pool-classifier using gbdxtools.
-We have provided sample input data in platform_stories/create_task/rf_pool_classifier.
 
 Open an iPython terminal, create a GBDX interface and specify the task input location.
 
@@ -975,7 +973,7 @@ bucket = gbdx.s3.info['bucket']
 prefix = gbdx.s3.info['prefix']
 
 # specify location
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/create_task/rf_pool_classifier'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf_pool_classifier'
 ```
 
 # Create an rf_task object and specify the inputs.
@@ -990,9 +988,9 @@ rf_task.inputs.n_estimators = "1000"
 Create a single-task workflow object and define where the output data should be saved.
 
 ```python
-# set output location to platform_stories/trial_runs/random_str within your bucket/prefix
+# set output location to platform-stories/trial-runs/random_str within your bucket/prefix
 random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
-output_location = join('platform_stories/trial_runs', random_str)
+output_location = join('platform-stories/trial-runs', random_str)
 
 workflow = gbdx.Workflow([rf_task])
 workflow.savedata(rf_task.outputs.trained_classifier, output_location)
@@ -1601,7 +1599,7 @@ import random, string
 
 gbdx = Interface()
 
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/create_task/train_cnn'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/train_cnn'
 ```
 
 Create a cnn_task object and specify the inputs.
@@ -1616,9 +1614,9 @@ cnn_task.inputs.nb_epoch = '15'
 Create a single-task workflow object and specify where the output data should be saved.
 
 ```python
-# set output location to platform_stories/trial_runs/random_str within your bucket/prefix
+# set output location to platform-stories/trial-runs/random_str within your bucket/prefix
 random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
-output_location = join('platform_stories/trial_runs', random_str)
+output_location = join('platform-stories/trial-runs', random_str)
 
 workflow = gbdx.Workflow([cnn_task])
 workflow.savedata(cnn_task.outputs.trained_model, output_location)

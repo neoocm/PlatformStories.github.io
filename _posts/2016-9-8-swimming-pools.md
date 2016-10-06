@@ -113,7 +113,7 @@ import string
 gbdx = Interface()
 
 # specify location of files needed in this story
-input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform_stories/swimming_pools'
+input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/swimming-pools'
 ```
 
 Create a train_task object and set the required inputs:
@@ -153,15 +153,15 @@ deploy_task.inputs.bit_depth = '8'
 deploy_task.inputs.min_side_dim = '10'    # Minimum acceptable side dimension for a polygon
 ```
 
-String the two tasks together in a workflow and save the output in a randomly specified
-directory under your-bucket/your-prefix/platform_stories/swimming_pools/trial_runs:
+String the two tasks together in a workflow and save the output in a directory with
+a unique string identifier under bucket/prefix/platform-stories/swimming-pools/trial-runs:
 
 ```python
 workflow = gbdx.Workflow([train_task, deploy_task])
 
-# set output location to platform_stories/trial_runs/random_str within your bucket/prefix
+# set output location to platform-stories/trial-runs/random_str within your bucket/prefix
 random_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
-output_location = join('platform_stories/trial_runs', random_str)
+output_location = join('platform-stories/trial-runs', random_str)
 
 # save workflow outputs
 workflow.savedata(train_task.outputs.trained_model, join(output_location, 'trained_model'))
