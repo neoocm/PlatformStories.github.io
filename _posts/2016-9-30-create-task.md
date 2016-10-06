@@ -977,7 +977,7 @@ prefix = gbdx.s3.info['prefix']
 input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf-pool-classifier'
 ```
 
-# Create an rf_task object and specify the inputs.
+Create an rf_task object and specify the inputs.
 
 ```python
 rf_task = gbdx.Task('rf-pool-classifier')
