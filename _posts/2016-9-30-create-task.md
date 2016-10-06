@@ -592,6 +592,7 @@ workflow = gbdx.Workflow([hello_task])
 output_str = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20))
 output_location = join('platform-stories/trial-runs', output_str)
 workflow.savedata(hello_task.outputs.data_out, output_location)
+```
 
 Execute the workflow and monitor its status as follows:
 
