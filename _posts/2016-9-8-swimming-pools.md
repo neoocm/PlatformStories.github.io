@@ -66,6 +66,10 @@ The workflow involves two tasks.
    ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
    *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
 
+   You can find more information on the algorithm used in this example
+   [here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
+   [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
+
 - [deploy_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/docs/deploy_cnn_classifier.md): Deploys a trained CNN model on target.geojson. Requires a trained model, target.geojson, and associated image strips, and returns classified.geojson. deploy_cnn_classifier can classify approximately 250,000 polygons per hour.
 
   ![deploy_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/deploy_cnn_classifier.png)  
@@ -213,7 +217,7 @@ For this visualization, we used the Mapbox [geojson-vt](https://github.com/mapbo
 ## Discussion
 
 This is a small example of what is possible on GBDX. Once a trained model is
-obtained, it can be deployed on properties over hundreds of different images
+obtained, it can be deployed on properties over hundreds or thousands of different images
 **in parallel**. Continental scale classification becomes a matter of hours.
 
 ![scale.png]({{ site.baseurl }}/images/swimming-pools/scale.png)
@@ -221,6 +225,4 @@ obtained, it can be deployed on properties over hundreds of different images
 
 In order to exploit the power of GBDX, an algorithm must be packaged into a GBDX task.
 The procedure is described [here](https://platformstories.github.io/create-task) in detail.
-You can find more information on the algorithm used in this example
-[here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
-[here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_cnn).
+Get after it!
