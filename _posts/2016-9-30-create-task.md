@@ -970,8 +970,6 @@ from os.path import join
 import random, string
 
 gbdx = Interface()
-bucket = gbdx.s3.info['bucket']
-prefix = gbdx.s3.info['prefix']
 
 # specify location
 input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/platform-stories/create-task/rf-pool-classifier'
