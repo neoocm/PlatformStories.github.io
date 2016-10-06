@@ -141,12 +141,12 @@ deploy_task.inputs.images = join(input_location, 'images')
 deploy_task.inputs.geojson = join(input_location, 'target_geojson')
 ```
 
-We can also restrict the size of polygons that we deploy on and set the appropriate bit depth for the input imagery:
+Specify the classes for the deploy task. We can also restrict the size of polygons that we deploy on and set the appropriate bit depth for the input imagery:
 
 ```python
+deploy_task.inputs.classes = 'No swimming pool, Swimming pool'
 deploy_task.inputs.bit_depth = '8'
 deploy_task.inputs.min_side_dim = '10'    # Minimum acceptable side dimension for a polygon
-deploy_task.inputs.classes = 'No swimming pool, Swimming pool'
 ```
 
 String the two tasks together in a workflow and save the output in a randomly specified
@@ -161,7 +161,7 @@ output_location = join('platform_stories/trial_runs', random_str)
 
 # save workflow outputs
 workflow.savedata(train_task.outputs.trained_model, join(output_location, 'trained_model'))
-workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_location, 'classified_shapefile'))
+workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_location, 'classified_geojson'))
 ```
 
 Execute the workflow:
@@ -194,10 +194,10 @@ gbdx.s3.download(join(output_location, 'trained_model/test_report.txt'), 'traine
 gbdx.s3.download(join(output_location, 'trained_model/model_weights/round_1/'), 'trained_model/model_weights/round_1/')
 gbdx.s3.download(join(output_location, 'trained_model/model_weights/round_2/'), 'trained_model/model_weights/round_2/')
 
-! mkdir classified_shapefile
+! mkdir classified_geojson
 
 # deploy_cnn_classifier sample output
-gbdx.s3.download(join(output_location, 'classified_shapefile'), 'classified_shapefile')
+gbdx.s3.download(join(output_location, 'classified_geojson'), 'classified_geojson')
 ```
 
 ## Visualizing the Results
