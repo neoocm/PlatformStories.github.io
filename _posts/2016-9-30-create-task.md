@@ -38,9 +38,8 @@ When a workflow is executed, tasks are scheduled appropriately by a **scheduler*
 ## Hello GBDX
 
 In this section, we will write a Python script for our Hello GBDX task, hello-gbdx.
-The script [*hello_gbdx.py*](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) (not to be confused with the task name 'hello-gbdx')
-does the following: it obtains a list of the task input files and prints this list
-in the file *out.txt*, along with a user defined message.
+The script [hello_gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) does the following: it obtains a list of the task input files and prints this list
+in the file out.txt, along with a user defined message.
 This script is executed by the Python interpreter within the task's Docker container (more on this [a bit later](#about-docker)).
 
 ```python
@@ -100,7 +99,7 @@ The value of the input string port message is obtained using the ```get_input_st
 message = self.get_input_string_port('message', default='No message!')
 ```
 
-message is one of possibly many task **string input ports**. What ```get_input_string_port('message', default='No message!')``` does behind the scenes is read the value of message from the file *ports.json* which is found under mnt/work/input/. (Keep in mind that you don't have to worry about these inner workings if you don't want to!) If the value is not specified, it returns a default value.
+message is one of possibly many task **string input ports**. What ```get_input_string_port('message', default='No message!')``` does behind the scenes is read the value of message from the file ports.json which is found under mnt/work/input/. (Keep in mind that you don't have to worry about these inner workings if you don't want to!) If the value is not specified, it returns a default value.
 
 The name of the output directory is obtained using the ```get_output_data_port``` function (inherited from **GbdxTaskInterface**) and the output directory is created.  
 
@@ -112,7 +111,7 @@ os.makedirs(output_dir)
 
 data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'.  Note that **it is the responsibility of the script** to create the output directory.
 
-*out.txt* is created and saved in the output directory:
+out.txt is created and saved in the output directory:
 
 ```python
 # Write message to file
@@ -131,7 +130,7 @@ if __name__ == "__main__":
 ```
 
 How is data input to and output from hello-gbdx when it is executed on GBDX?
-If hello-gbdx is the first in a series of tasks comprising a workflow, data_in is assigned a string value by the user which is the S3 location that contains the task input files (it will soon become apparent how to do this). These files are automatically copied to mnt/work/input/data_in of the docker container which runs *hello_gbdx.py* (we will cover docker in the next section). When the execution of *hello_gbdx.py* is concluded, *out.txt* is found in mnt/work/input/data_out of the docker container (our script explicitly saved it there). GBDX permits saving the contents of mnt/work/input/data_out
+If hello-gbdx is the first in a series of tasks comprising a workflow, data_in is assigned a string value by the user which is the S3 location that contains the task input files (it will soon become apparent how to do this). These files are automatically copied to mnt/work/input/data_in of the docker container which runs hello_gbdx.py (we will cover docker in the next section). When the execution of hello_gbdx.py is concluded, out.txt is found in mnt/work/input/data_out of the docker container (our script explicitly saved it there). GBDX permits saving the contents of mnt/work/input/data_out
 at a user-specified S3 location, as well as feed those to the directory input port of another task in order to chain the two tasks together. If neither of those actions are performed, the contents of mnt/work/input/data_out are lost when the task executed. In this walkthrough, we will only consider single-task workflows; you can explore Platform Stories for examples of more complicated workflows involving multiple tasks.
 
 In the next section we go through the steps of creating a Docker image for hello-gbdx.
@@ -161,7 +160,7 @@ Because Docker can be confusing if you are not used to it, we will define some t
 * <b>Container</b>: A container is a runtime instance of a Docker image (similar to an object being an instantiation of a class in Python).
 
 * <b>DockerFile</b>: A Dockerfile is a text document that contains all the commands you would normally execute manually in order to build a Docker image. Docker can build images automatically by reading the instructions from a Dockerfile.
-*It is only necessary to create a DockerFile if you elect to create your image from scratch*.
+It is only necessary to create a DockerFile if you elect to create your image from scratch.
 
 * <b>DockerHub</b>: A repository of images. You can pull and edit these images for your own use, analogous to cloning or forking a GitHub repo.
 
@@ -237,7 +236,7 @@ Congratulations! You now have your own docker image to which you can add your co
 ![docker_commit_wf.png]({{ site.baseurl }}/images/create-task/docker_commit_wf.png)
 *Figure 2: Adding code to a docker image.*
 
-The following steps (shown in Figure 2) walk you through adding [*hello_gbdx.py*](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) and [*gbdx_task_interface.py*](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/gbdx_task_interface.py) to hello-gbdx-docker-image. Before getting started ensure that both scripts are saved to your current working directory.
+The following steps (shown in Figure 2) walk you through adding [hello_gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) and [gbdx_task_interface.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/gbdx_task_interface.py) to hello-gbdx-docker-image. Before getting started ensure that both scripts are saved to your current working directory.
 
 First we run the image using the ```docker run``` command in detached mode (using the -d flag). This tells the container to run in the background so we can access the files on our local machine.
 
@@ -278,7 +277,7 @@ docker commit -m 'add scripts to root' <container_id> <your_username>/hello-gbdx
 docker push <your_username>/hello-gbdx-docker-image
 ```
 
-Now when you run hello-gbdx-docker-image, *hello_gbdx.py* and *gbdx_task_interface.py* will be in the root directory.
+Now when you run hello-gbdx-docker-image, hello_gbdx.py and gbdx_task_interface.py will be in the root directory.
 
 **Extra credit**: Although hello-gbdx does not require any additional libraries to run, often times you will need to install a package that is not provided in the image that you pulled. Let's say our task requires numpy to run; the process of adding it to the image is similar:
 
@@ -309,7 +308,7 @@ For more information on DockerFiles see [here](https://docs.docker.com/engine/re
 
 In this example, we will build hello-gbdx-docker-image.
 
-We begin by making the directory [hello-gbdx-build](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build), which will contain our DockerFile, and the subdirectory bin in which we copy *hello_gbdx.py* and *gbdx_task_interface.py*.
+We begin by making the directory [hello-gbdx-build](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build), which will contain our DockerFile, and the subdirectory bin in which we copy hello_gbdx.py and gbdx_task_interface.py.
 
 ```bash
 # Make build an bin directories
@@ -322,7 +321,7 @@ cp path/to/hello_gbdx.py bin/
 cp path/to/gbdx_task_interface.py bin/
 ```
 
-Now we can create our DockerFile. From within the hello-gbdx-build directory, type ```vim Dockerfile``` (or whatever code editor you prefer) to create a blank document. The first line of *DockerFile* is the OS that your image uses. We will be working with Ubuntu. Type the following in the first line of the file:
+Now we can create our DockerFile. From within the hello-gbdx-build directory, type ```vim Dockerfile``` (or whatever code editor you prefer) to create a blank document. The first line of the DockerFile is the OS that your image uses. We will be working with Ubuntu. Type the following in the first line of the file:
 
 ```bash
 FROM ubuntu:14.04
@@ -342,7 +341,7 @@ RUN apt-get update && apt-get -y install\
     python-dev
 ```
 
-We instruct Docker to place the contents of [bin](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build/bin) into the image root directory. Add the following line to the end of *DockerFile*:
+We instruct Docker to place the contents of [bin](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build/bin) into the image root directory. Add the following line to the end of Dockerfile:
 
 ```bash
 # Add all scripts in bin to the image root directory
@@ -369,9 +368,9 @@ Our Docker image is now ready to be tested with sample inputs.
 
 ### Testing a Docker Image
 
-At this point you should have hello-gbdx-docker-image which includes *hello_gbdx.py*.
-In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/sample-input in this repo](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input) contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/data_in), the contents of which will be written to *out.txt* (in this example, this is simply the file *data_file.txt*) (b) the file [*ports.json*](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/ports.json) which
-contains the message to be written to *out.txt*. Keep in mind that *ports.json* is automatically created by GBDX based on the task definition and the values of the string input ports provided by the user when the task is executed.
+At this point you should have hello-gbdx-docker-image which includes hello_gbdx.py.
+In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/sample-input in this repo](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input) contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/data_in), the contents of which will be written to out.txt (in this example, this is simply the file *data_file.txt*) (b) the file [ports.json](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/ports.json) which
+contains the message to be written to out.txt. Keep in mind that ports.json is automatically created by GBDX based on the task definition and the values of the string input ports provided by the user when the task is executed.
 
 Run hello-gbdx-docker-image and mount inputs to the container under mnt/work/input; this is where GBDX will place the inputs when the task is executed.
 
@@ -389,13 +388,13 @@ root@3ad24b35e32e:/ ls /mnt/work/input/
 >>> data_in  ports.json
 ```
 
-To test hello-gbdx, simply run the *hello_gbdx.py* script.
+To test hello-gbdx, simply run the hello_gbdx.py script.
 
 ```bash
 root@3ad24b35e32e:/ python hello_gbdx.py
 ```
 
-If the script completes successfully you shouldn't see anything written to STDOUT and the file *out.txt* should be found under mnt/work/output/. Here is how you can confirm this:
+If the script completes successfully you shouldn't see anything written to STDOUT and the file out.txt should be found under mnt/work/output/. Here is how you can confirm this:
 
 ```bash
 # Navigate to the output directory, ensure that 'data_out' lives there
@@ -409,7 +408,7 @@ root@3ad24b35e32e:/ ls
 >>> out.txt
 ```
 
-You can also make sure *out.txt* contains the expected content by typing ```vim out.txt```. The file should look like this:
+You can also make sure out.txt contains the expected content by typing ```vim out.txt```. The file should look like this:
 
 ```bash
 data_file.txt
@@ -556,7 +555,7 @@ from gbdxtools import Interface
 gbdx = Interface()
 ```
 
-Call the ```register()``` method of the **TaskRegistry** class with the name of the definition JSON. (Make sure *hello-gbdx-definition.json* is in your working directory).
+Call the ```register()``` method of the **TaskRegistry** class with the name of the definition JSON. (Make sure hello-gbdx-definition.json is in your working directory).
 
 ```python
 gbdx.task_registry.register(json_filename = 'hello-gbdx-definition.json')
@@ -601,7 +600,7 @@ workflow.execute()
 workflow.status
 ```
 
-When the workflow is complete, you can download *out.txt* locally as follows
+When the workflow is complete, you can download out.txt locally as follows
 
 ```python
 gbdx.s3.download(output_location)
@@ -623,16 +622,16 @@ In the last section, we created a simple task that generates a text file with a 
 
 ### Random Forest Classifier
 
-In this example, we will create the task 'rf-pool-classifier' that trains a [random forest classifier](https://en.wikipedia.org/wiki/Random_forest) to classify polygons of arbitrary geometry into those that contain swimming pools and those that don't. For more information on this algorithm see [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_random_forest) and [here](http://blog.tomnod.com/crowd-and-machine-combo).
+In this example, we will create the task rf-pool-classifier that trains a [random forest classifier](https://en.wikipedia.org/wiki/Random_forest) to classify polygons of arbitrary geometry into those that contain swimming pools and those that don't. For more information on this algorithm see [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_random_forest) and [here](http://blog.tomnod.com/crowd-and-machine-combo).
 
 ![rf_img.png]({{ site.baseurl }}/images/create-task/rf_img.png)
 *Figure 4: Inputs and output of rf-pool-classifier.*
 
-rf-pool-classifier has two directory input ports: geojson and image. Within geojson and image, the task expects to find a file *train.geojson*, which contains labeled polygons from both classes, and a tif image file from which the task will extract the pixels corresponding to each polygon, respectively (Figure 4). The task also has the input string port n_estimators that determines the number of trees in the random forest; specifying a value is optional and the default is '100'. The task produces a trained model in [pickle](https://docs.python.org/2/library/pickle.html) format, which is saved in the S3 location specified by the output port trained_classifier.
+rf-pool-classifier has two directory input ports: geojson and image. Within geojson and image, the task expects to find a file train.geojson, which contains labeled polygons from both classes, and a tif image file from which the task will extract the pixels corresponding to each polygon, respectively (Figure 4). The task also has the input string port n_estimators that determines the number of trees in the random forest; specifying a value is optional and the default is '100'. The task produces a trained model in [pickle](https://docs.python.org/2/library/pickle.html) format, which is saved in the S3 location specified by the output port trained_classifier.
 
 #### The Code
 
-The code of *rf_pool_classifier.py* is shown below; the structure is the same as *hello_gbdx.py*.
+The code of rf_pool_classifier.py is shown below; the structure is the same as hello_gbdx.py.
 
 ```python
 import numpy as np
@@ -730,7 +729,7 @@ output_dir = self.get_output_data_port('trained_classifier')
 os.makedirs(output_dir)
 ```
 
-Using the ```mltools.data_extractors``` modules, the pixels corresponding to each polygon in *train.geojson* are extracted and stored in a masked numpy array. For each array, a 4-dim feature vector is computed by the function ```features.pool_basic``` and stored in the list X.
+Using the ```mltools.data_extractors``` modules, the pixels corresponding to each polygon in train.geojson are extracted and stored in a masked numpy array. For each array, a 4-dim feature vector is computed by the function ```features.pool_basic``` and stored in the list X.
 
 ```python
 # Get training data from the geojson input
@@ -792,7 +791,7 @@ root@5d4ae93d26dd:/ exit
 docker commit -m 'install rf classifier packages' <container_id> <your_username>/rf-pool-classifier-docker-image
 ```
 
-We are now ready to copy *rf_pool_classifier.py* and *gbdx_task_interface.py* to rf-pool-classifier-docker-image. Make sure to have the script saved to your working directory and execute the following:
+We are now ready to copy rf_pool_classifier.py and gbdx_task_interface.py to rf-pool-classifier-docker-image. Make sure to have the script saved to your working directory and execute the following:
 
 ```bash
 # Run Docker in detached mode
@@ -843,7 +842,7 @@ The DockerFile and scripts can be found [here](https://github.com/PlatformStorie
 
 #### Testing the Docker Image
 
-We can now test rf-pool-classifier-docker-image on our local machine before defining rf-pool-classifier and registering it on the platform. Just as in the case of [hello-gbdx](#testing-a-docker-image), we will mimic the platform by mounting sample input to a container and then executing *rf_pool_classifier.py*.
+We can now test rf-pool-classifier-docker-image on our local machine before defining rf-pool-classifier and registering it on the platform. Just as in the case of [hello-gbdx](#testing-a-docker-image), we will mimic the platform by mounting sample input to a container and then executing rf_pool_classifier.py.
 
 Create the directory rf_pool_classifier_test in which to download the task inputs from S3. You will need subdirectories for geojson and image.
 
@@ -855,7 +854,7 @@ mkdir geojson
 mkdir image
 ```
 
-From an iPython terminal, download *1040010014800C00.tif* and *train.geojson* from their S3 locations as follows.
+From an iPython terminal, download 1040010014800C00.tif and train.geojson from their S3 locations as follows.
 Note that the tif is large (~15 GB) so you will need adequate disk space.
 
 ```python
@@ -881,13 +880,13 @@ Run rf-pool-classifier-docker-image with rf_pool_classifier_test mounted to the 
 docker run -v ~/<full/path/to/rf_pool_classifier_test>:/mnt/work/input -it <your_username>/rf-pool-classifier-docker-image
 ```
 
-Within the container run *rf_pool_classifier.py*.
+Within the container run rf_pool_classifier.py.
 
 ```bash
 python /rf_pool_classifier.py
 ```
 
-The script should run without errors. To confirm this, check the output port directory for *classifier.pkl*.
+The script should run without errors. To confirm this, check the output port directory for classifier.pkl.
 
 ```bash
 root@91d9d5cd9570:/ ls mnt/work/output/trained_classifier
@@ -948,7 +947,7 @@ The definition for rf-pool-classifier is provided below:
 }
 ```
 
-Put *rf-pool-classifier-definition.json* in your working directory and register rf-pool-classifier as follows:
+Put rf-pool-classifier-definition.json in your working directory and register rf-pool-classifier as follows:
 
 ```python
 from gbdxtools import Interface
@@ -1002,7 +1001,7 @@ workflow.execute()
 workflow.status
 ```
 
-Once the workflow is completed, you can download *classifier.pkl* locally as follows:
+Once the workflow is completed, you can download classifier.pkl locally as follows:
 
 ```python
 gbdx.s3.download(output_location)
@@ -1048,7 +1047,7 @@ Extract CUDA installer.
 >> ./cuda_6.5.14_linux_64.run -extract=`pwd`/nvidia_installers
 ```
 
-Download the *NVIDIA-Linux-x86_64-346.46.run* file provided in this repo and copy it to your AWS instance.
+Download the NVIDIA-Linux-x86_64-346.46.run file provided in this repo and copy it to your AWS instance.
 
 ```bash
 # copy the NVIDIA driver from your local machine to the AWS instance
@@ -1223,14 +1222,14 @@ root@a28d273819ea:/ apt-get update && apt-get -y install python build-essential 
 root@a28d273819ea:/ pip install keras theano
 ```
 
-Navigate to the home directory and create a *.theanorc* file. This will instruct Theano to use the GPU.
+Navigate to the home directory and create the file .theanorc. This will instruct Theano to use the GPU.
 
 ```bash
 root@a28d273819ea:/ cd
 root@a28d273819ea:# vim .theanorc
 ```
 
-Paste the following into *.theanorc*:
+Paste the following into .theanorc:
 
 ```bash
 [global]  
@@ -1274,11 +1273,11 @@ train-cnn has a single directory input port [train_data](https://github.com/Plat
 - *X.npz*: Training images as a numpy array saved in [npz format](http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html). The array should have the following dimensional ordering: (num_images, num_bands, img_rows, img_cols).
 - *y.npz*: Class labels corresponding to training images as a numpy array saved in npz format.
 
-train-cnn also has the optional string input ports bit_depth and nb_epoch. The former specifies the bit depth of the imagery and defaults to '8' and the latter defines the number of training epochs with a default value of '10'. The task produces a trained model in the form of a model architecture file *model_architecture.json* and a trained weights file *model_weights.h5*. These two outputs will be stored in the S3 location specified by the output port trained_model.
+train-cnn also has the optional string input ports bit_depth and nb_epoch. The former specifies the bit depth of the imagery and defaults to '8' and the latter defines the number of training epochs with a default value of '10'. The task produces a trained model in the form of a model architecture file model_architecture.json and a trained weights file model_weights.h5. These two outputs will be stored in the S3 location specified by the output port trained_model.
 
 #### The Code
 
-The code of *train_cnn.py* is shown below.
+The code of train_cnn.py is shown below.
 
 ```python
 import os
@@ -1358,9 +1357,9 @@ if __name__ == '__main__':
         task.invoke()
 ```
 
-Here is what is happening in *train_cnn.py*:  
+Here is what is happening in train_cnn.py:  
 
-Define the **TrainCnn** class that inherits from **GbdxTaskInterface**, read the input ports, and load the training data as *X_train* and labels as *y_train*.
+Define the **TrainCnn** class that inherits from **GbdxTaskInterface**, read the input ports, and load the images and labels to X_train and y_train, respectively.
 
 ```python
 class TrainCnn(GbdxTaskInterface):
@@ -1426,7 +1425,7 @@ model.fit(X_train, Y_train, batch_size=128, nb_epoch=nb_epoch,
       verbose=1)
 ```
 
-Create *model_architecture.json* and *model_weights.h5* and save them to the output directory port.  
+Create model_architecture.json and model_weights.h5 and save them to the output directory port.  
 
 ```python
 # Create the output directory
@@ -1450,7 +1449,7 @@ if __name__ == '__main__':
 
 #### The Docker Image
 
-train-cnn requires a Docker image that can access the GPU. We build the Docker image train-cnn-docker-image by pulling the Theano gbdx-gpu image that we created [above](#getting-a-gpu-compatible-image) and copying in *train_cnn.py* and *gbdx_task_interface.py*.  
+train-cnn requires a Docker image that can access the GPU. We build the Docker image train-cnn-docker-image by pulling the Theano gbdx-gpu image that we created [above](#getting-a-gpu-compatible-image) and copying in train_cnn.py and gbdx_task_interface.py.  
 
 Pull [naldeborgh/gbdx-gpu](https://hub.docker.com/r/naldeborgh/gbdx-gpu/) from DockerHub if you do not already have it. Tag the image under your username and rename it to train-cnn-docker-image.
 
@@ -1459,7 +1458,7 @@ docker pull naldeborgh/gbdx-gpu
 docker tag naldeborgh/gbdx-gpu <your_username>/train-cnn-docker-image
 ```
 
-Run train-cnn-docker-image in detached mode and copy *train_cnn.py* and *gbdx_task_interface.py*.
+Run train-cnn-docker-image in detached mode and copy train_cnn.py and gbdx_task_interface.py.
 
 ```bash
 # Run train-cnn-docker-image in detached mode
@@ -1468,7 +1467,7 @@ docker run -itd <your_username>/train-cnn-docker-image
 
 # Copy code file to the image
 docker cp train_cnn.py <container_id>:/
-docker cp *gbdx_task_interface.py* <container_id>:/
+docker cp gbdx_task_interface.py <container_id>:/
 ```
 
 Commit changes to train-cnn-docker-image and push it to DockerHub.
@@ -1482,7 +1481,7 @@ This image now has all of the libraries and scripts required by train-cnn. Conti
 
 #### Testing the Docker Image
 
-We will now test train-cnn-docker-image with sample input to ensure that *train_cnn.py* runs successfully AND that the GPU is utilized.
+We will now test train-cnn-docker-image with sample input to ensure that train_cnn.py runs successfully AND that the GPU is utilized.
 
 ssh into the AWS GPU instance and clone this repo so that the sample input is on the instance.
 
@@ -1506,7 +1505,7 @@ Run a container from train-cnn-docker-image. This is where testing on a GPU diff
 docker run --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia0 -v ~/PlatformStories/create-task/train-cnn/sample-input:/mnt/work/input/ -it <your_username>/train-cnn-docker-image /bin/bash
 ```
 
-Run *train_cnn.py*. In this step we confirm that the container is using the GPU and that the script runs without errors.
+Run train_cnn.py. In this step we confirm that the container is using the GPU and that the script runs without errors.
 
 ```bash
 root@984b2508233b:/build# python /train_cnn.py
@@ -1520,7 +1519,7 @@ root@984b2508233b:/build# python /train_cnn.py
 
 The second line of STDOUT indicates that the container is indeed using the GPU! The lines that follow indicate that the model is being trained.
 
-To confirm that the script was run successfully, check the output directory for the files *model_architecture.json* and *model_weights.h5*.  
+To confirm that the script was run successfully, check the output directory for the files model_architecture.json and model_weights.h5.  
 
 ```bash
 # Look for the trained model in the output directory
