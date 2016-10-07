@@ -192,12 +192,6 @@ gbdx.s3.download(join(output_location, 'trained_model/model_architecture.json'),
 gbdx.s3.download(join(output_location, 'trained_model/model_weights.h5'), 'trained_model/')
 gbdx.s3.download(join(output_location, 'trained_model/test_report.txt'), 'trained_model/')
 
-! mkdir trained_model/model_weights/round_1 trained_model/model_weights/round_2
-
-# train_cnn_classifier sample output: weights after each epoch
-gbdx.s3.download(join(output_location, 'trained_model/model_weights/round_1/'), 'trained_model/model_weights/round_1/')
-gbdx.s3.download(join(output_location, 'trained_model/model_weights/round_2/'), 'trained_model/model_weights/round_2/')
-
 ! mkdir classified_geojson
 
 # deploy_cnn_classifier sample output
