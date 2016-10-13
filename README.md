@@ -1,3 +1,3 @@
 # PlatformStories.github.io
 
-Platform Stories web page.
+GBDX Stories web page.

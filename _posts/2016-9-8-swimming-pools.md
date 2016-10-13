@@ -9,7 +9,9 @@ urban and regional planning and management, risk estimation, and emergency respo
 Extracting this information using human analysts to scour satellite imagery
 is prohibitively expensive and time consuming. Feature extraction and machine
 learning algorithms are the only viable way to perform this type of attribution
-at scale.  This is why the Australian company PSMA teamed up with DG to develop the product
+at scale.  
+
+This is why the Australian company PSMA teamed up with DG to develop the product
 [Geoscape](https://www.psma.com.au/geoscape): a diverse set of building attributes
 including height, rooftop material, solar panel installation and presence of a swimming pool
 in the property across the **entire Australian continent**.
