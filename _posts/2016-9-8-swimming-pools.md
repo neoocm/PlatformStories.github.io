@@ -204,7 +204,7 @@ gbdx.s3.download(join(output_location, 'classified_geojson'), 'classified_geojso
 
 You can visualize the classification results [here]({{ site.baseurl }}/pages/swimming-pools/adelaide-classified-properties.html). Green/red polygons indicate presence/absence of pool. Clicking on each polygon shows the corresponding feature id and assigned classification.  
 
-![vis_example.png]({{ site.baseurl }}/images/swimming-pools/vis_example.png)  
+![result_screenshot.png]({{ site.baseurl }}/images/swimming-pools/result_screenshot.png)  
 *Sample results of our workflow. Properties containing pools are outlined in green.*
 
 For this visualization, we used the Mapbox [geojson-vt](https://github.com/mapbox/geojson-vt) library to slice *classified.geojson* into vector tiles on the fly. Pretty cool!
