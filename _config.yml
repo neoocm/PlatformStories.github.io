@@ -3,7 +3,7 @@
 #
 
 # Name of your site (displayed in the header)
-name: Platform Stories
+name: GBDX Stories
 
 # Short bio or description (displayed in the header)
 description: Solving the coolest geospatial problems at scale
@@ -39,7 +39,7 @@ disqus:
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
 google_analytics: UA-84873335-1
 
-# Your website URL 
+# Your website URL
 # Used for Sitemap.xml and your RSS feed
 url:
 
@@ -67,6 +67,7 @@ kramdown:
   syntax_highlighter_opts:
     # Use existing pygments syntax highlighting css
     css_class: 'highlight'
+
 
 # Set the Sass partials directory, as we're using @imports
 sass:
