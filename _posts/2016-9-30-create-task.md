@@ -1020,213 +1020,186 @@ This section will walk you through setting up a local GPU instance for building 
 
 #### Setting up a GPU instance
 
-Currently, all GPU devices on GBDX use NVIDIA driver version 346.46. Here are the steps for setting up an AWS instance with this driver, which you will need to test your GPU-compatible Docker image.
+All GBDX GPU workers use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker#nvidia-docker) to allow running containers to leverage their GPU devices. Here are the steps for setting up an AWS instance with nvidia-docker, which you will need to test your GPU-compatible Docker image.
 
-Launch an [EC2 g2.2xlarge](https://aws.amazon.com/ec2/instance-types/#g2) ubuntu instance on AWS. At least 20GB of storage is recommended.  
+On AWS launch ami-d05e75b8. Choose a GPU instance of type [EC2 g2.2xlarge](https://aws.amazon.com/ec2/instance-types/#g2). At least 20GB of storage is recommended.  
 
-Now ssh into your instance and install build-essential.
+ssh into your instance and install CUDA repository.
 
 ```bash
 ssh -i <path/to/key_pair> ubuntu@<instance_id>
 
-sudo -s
-apt-get update && apt-get install build-essential
+wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.5-18_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu1404_7.5-18_amd64.deb
 ```
 
-Get CUDA installer.
+Update APT and install dependencies.
 
 ```bash
-wget http://developer.download.nvidia.com/compute/cuda/6_5/rel/installers/cuda_6.5.14_linux_64.run
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install -y opencl-headers build-essential protobuf-compiler \
+    libprotoc-dev libboost-all-dev libleveldb-dev hdf5-tools libhdf5-serial-dev \
+    libopencv-core-dev  libopencv-highgui-dev libsnappy-dev libsnappy1 \
+    libatlas-base-dev cmake libstdc++6-4.8-dbg libgoogle-glog0 libgoogle-glog-dev \
+    libgflags-dev liblmdb-dev git python-pip gfortran
+
+# Clean up
+sudo apt-get clean
 ```
 
-Extract CUDA installer.  
+Specify DRM module version.
 
 ```bash
->> chmod +x cuda_6.5.14_linux_64.run
->> mkdir nvidia_installers
->> ./cuda_6.5.14_linux_64.run -extract=`pwd`/nvidia_installers
+sudo apt-get install -y linux-image-extra-`uname -r` linux-headers-`uname -r` linux-image-`uname -r`
 ```
 
-Download the NVIDIA-Linux-x86_64-346.46.run file provided in this repo and copy it to your AWS instance.
+Install CUDA.  
 
 ```bash
-# copy the NVIDIA driver from your local machine to the AWS instance
-scp -i <path/to/key_pair> <path/to/NVIDIA-Linux-x86_64-346.46.run> ubuntu@<instance_id>:/
-
-# ssh back into the AWS instance, and move the driver file to the nvidia_installers directory
-mv /path/to/NVIDIA-Linux-x86_64-346.46.run nvidia_installers/
-cd nvidia_installers
-```
-
-Run NVIDIA driver installer. An 8-bit UI will ask you a number of questions. Agree to everything.  
-
-```bash
-./NVIDIA-Linux-x86_64-346.46.run
-```
-
-If you get a kernel error while trying to install the NVIDIA driver,
-troubleshoot according to the black bullets.
-Otherwise, skip these completely.
-
-- Install linux image extra virtual and reboot.
-
-```bash
-sudo apt-get install linux-image-extra-virtual
-reboot
-```
-
-- Once the instance has rebooted, ssh back into it and create a file to blacklist nouveau as follows.
-
-```bash
-sudo -s
-vim /etc/modprobe.d/blacklist-nouveau.conf
-
-# Add these lines to file and save
-blacklist nouveau
-blacklist lbm-nouveau
-options nouveau modeset=0
-alias nouveau off
-alias lbm-nouveau off
-
-# Disable the Kernel Nouveau and reboot
-echo options nouveau modeset=0 | sudo tee -a /etc/modprobe.d/nouveau-kms.conf
-update-initramfs -u
-reboot
-```
-
-- Once again ssh into the rebooted instance and install linux source and headers.
-
-```bash
-# ssh into the instance, get kernel source
-sudo -s
-apt-get install linux-source
-apt-get install linux-headers-3.13.0-37-generic
-```
-
-- Finally, update grub and rerun the driver installation.
-
-```bash
-update-grub
-apt-get install linux-headers-`uname -r`
-
-# Rerun the NVIDIA installer
-cd nvidia_installers
-./NVIDIA-Linux-x86_64-346.46.run
-```
-
-Once the driver is successfully installed, reboot the machine.
-
-```bash
-sudo reboot
-```
-
-Load NVIDIA kernel module.  
-
-```bash
-modprobe nvidia
-```
-
-Run CUDA and samples installer.  
-
-```bash
-./cuda-linux64-rel-6.5.14-18749181.run
-./cuda-samples-linux-6.5.14-18745345.run
+sudo apt-get install -y cuda
+sudo apt-get clean
 ```
 
 Verify CUDA installation.  
 
 ```bash
-cd /usr/local/cuda/samples/1_Utilities/deviceQuery
-make
-./deviceQuery
+nvidia-smi
+
+# You should see the following output:
++------------------------------------------------------+
+| NVIDIA-SMI 361.93.02  Driver Version: 361.93.02      |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GRID K520           Off  | 0000:00:03.0     Off |                  N/A |
+| N/A   30C    P0    36W / 125W |     11MiB /  4095MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID  Type  Process name                               Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
 ```
 
-If CUDA has been installed successfully you will see the following output:
+Install Docker on your image, beginning with a couple prerequisites.
 
 ```bash
-deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 7.0, CUDA Runtime Version = 6.5, NumDevs = 1, Device0 = GRID K520
-Result = PASS
+sudo apt-get -f install
+sudo apt-get install apt-transport-https ca-certificates
+
+# Add the new GPG key
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+```
+
+Create a docker.list file:
+
+```bash
+sudo vim /etc/apt/sources.list.d/docker.list
+```
+
+Replace any existing entries in the file with the following:
+
+```bash
+deb https://apt.dockerproject.org/repo ubuntu-trusty main
+```
+
+Update APT package index and purge the old repo if it exists.
+
+```bash
+sudo apt-get update
+sudo apt-get purge lxc-docker
+```
+
+Install Docker.
+
+```bash
+sudo apt-get update
+sudo apt-get install docker-engine
+```
+
+Instruct docker to run without sudo privileges.
+
+```bash
+sudo service docker start
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
+
+Ensure Docker was installed properly by running the 'hello-world' container. You should see a message indicating that the installation was successful.
+
+```bash
+docker run hello-world
+```
+
+Finally, install nvidia-docker on the instance.
+
+```bash
+# Install nvidia-docker and nvidia-docker-plugin
+wget -P /tmp https://github.com/NVIDIA/nvidia-docker/releases/download/v1.0.0-rc.3/nvidia-docker_1.0.0.rc.3-1_amd64.deb
+sudo dpkg -i /tmp/nvidia-docker*.deb && rm /tmp/nvidia-docker*.deb
+
+# Test nvidia-smi
+nvidia-docker run --rm nvidia/cuda nvidia-smi
+
+# You should see the following output:
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 361.93.02              Driver Version: 361.93.02                 |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GRID K520           Off  | 0000:00:03.0     Off |                  N/A |
+| N/A   30C    P8    17W / 125W |      0MiB /  4036MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID  Type  Process name                               Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
 ```
 
 #### Building a GPU-Compatible Image
 
-In this section, we will build the [gbdx-caffe-ubuntu](https://github.com/ctuskdg/gbdx-gpu-docker/tree/master/ubuntu) Docker image created by Carsten Tusk, and then add the [Theano](http://deeplearning.net/software/theano/) and [Keras](https://keras.io/) Python libraries, as these are required by the example task presented in the next [section](#convolutional-neural-network). While still logged into the AWS instance, execute the following steps:
+Now that we have an instance on which to test our GPU tasks, we can create a Docker image that can access the GPU. To do this we simply use the Docker image [nvidia/cuda](https://hub.docker.com/r/nvidia/cuda/) as a base and install any necessary dependencies. nvidia/cuda is set up such that it can run seamlessly on any device using the nvidia-docker plugin, saving us the headache of matching drivers between the Docker image, GBDX worker nodes, and our GPU instance.
 
-Clone [this repo](https://github.com/ctuskdg/gbdx-gpu-docker) and navigate to the ubuntu folder.  
+Here we will create a Docker image 'gbdx-gpu' with the [Theano](http://deeplearning.net/software/theano/) and [Keras](https://keras.io/) Python libraries installed, as these are required by the example task presented in the next [section](#convolutional-neural-network). While still logged into the AWS instance, execute the following steps:
 
-```bash
-git clone https://github.com/ctuskdg/gbdx-gpu-docker
-cd gbdx-gpu-docker/ubuntu/
-```
-
-Build the image as follows. This can take a long time (~ 30 mins).
+Login to Docker on the running instance.
 
 ```bash
-sudo bash build
+docker login -u <your_username> -p <your_password>
 ```
 
-If you are going to be running Caffe instead of Theano or Keras on your image you will be able to use this image as is. Simply tag the image as follows and skip the remaining steps in this section.
+Pull the nvidia/cuda image created for CUDA 7.5 from DockerHub and tag it under a new name.
 
 ```bash
-# FOR CAFFE USERS ONLY
-docker tag gbdx-caffe-ubuntu <your_username>/gbdx-gpu
-
-# To run the image with GPU devices mounted:
-docker run --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia0 -it <your_username>/gbdx-gpu /bin/bash
+docker pull nvidia/cuda:7.5-cudnn4-devel
+docker tag nvidia/cuda:7.5-cudnn4-devel <your_username>/gbdx-gpu
 ```
 
-The build will result in three new Docker images on your device. We will be working with the one entitled 'gbdx-caffe-ubuntu'. Use the following command to run it with the GPU devices mounted, and navigate to the root directory:  
-
-```bash
-# Run the image with the GPU devices mounted
-docker run --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia0 -it gbdx-caffe-ubuntu /bin/bash
-root@a28d273819ea:/build# cd /
-root@a28d273819ea:/
-```
-
-From inside the Docker container we will now install CUDA, which will prevent errors when running Theano. Complete the following commands:
-
-```bash
-# Install build-essential
-root@a28d273819ea:/ sudo -s
-root@a28d273819ea:/ apt-get update && apt-get install build-essential
-
-# Get and dpkg CUDA installer
-root@a28d273819ea:/ wget http://developer.download.nvidia.com/compute/cuda/6_5/rel/installers/cuda_6.5.14_linux_64.run
-root@a28d273819ea:/ chmod +x cuda_6.5.14_linux_64.run
-root@a28d273819ea:/ mkdir nvidia_installers
-root@a28d273819ea:/ ./cuda_6.5.14_linux_64.run -extract=`pwd`/nvidia_installers
-
-# Run CUDA installers
-root@a28d273819ea:/ cd nvidia_installers
-root@a28d273819ea:/ ./cuda-linux64-rel-6.5.14-18749181.run
-root@a28d273819ea:/ ./cuda-samples-linux-6.5.14-18745345.run
-```
-
-Once CUDA installation is complete, exit the container and commit your changes to a new image called 'gbdx-gpu' under your username as follows:  
-
-```bash
-root@a28d273819ea:/ exit
-
-# Commit your changes and tag the image under your username
-docker commit -m 'update CUDA installation' <container id> <your_username>/gbdx-gpu
-```
-
-Run gbdx-gpu and install dependencies.  
+Run a container from the image.
 
 ```bash
 docker run -it <your_username>/gbdx-gpu /bin/bash
-
-# Install Python, gdal, and machine learning dependencies
-root@a28d273819ea:/ apt-get update && apt-get -y install python build-essential python-software-properties software-properties-common python-pip python-scipy python-dev vim gdal-bin python-gdal libgdal-dev
-root@a28d273819ea:/ pip install keras theano
 ```
 
-Navigate to the home directory and create the file .theanorc. This will instruct Theano to use the GPU.
+Install Python libraries and other machine learning dependencies.
 
 ```bash
-root@a28d273819ea:/ cd
-root@a28d273819ea:# vim .theanorc
+root@a28d273819ea:/ apt-get update && apt-get -y install python build-essential python-software-properties software-properties-common python-pip python-scipy python-dev vim gdal-bin python-gdal libgdal-dev
+root@a28d273819ea:/ pip install keras theano h5py
+```
+
+Create a .theanorc file in the root directory. This will instruct Theano to use the GPU.
+
+```bash
+root@a28d273819ea:# vim /root/.theanorc
 ```
 
 Paste the following into .theanorc:
@@ -1247,7 +1220,24 @@ fastmath = True
 ldflags = -llapack -lblas
 
 [cuda]
-root = /usr/local/cuda-6.5
+root = /usr/local/cuda
+```
+
+Save the .theanorc file and now update the Keras config file. This will instruct Keras to use the Theano backend.
+
+```bash
+root@a28d273819ea:# vim /root/.keras/keras.json
+```
+
+Remove any contents of the file and paste the following:
+
+```bash
+{
+"image_dim_ordering": "th",
+"epsilon": 1e-07,
+"floatx": "float32",
+"backend": "theano"
+}
 ```
 
 Exit the container and commit your changes to gbdx-gpu.
@@ -1258,7 +1248,7 @@ root@a28d273819ea:# exit
 docker commit -m 'install dependencies, add .theanorc' <container id> <your_username>/gbdx-gpu
 ```
 
-We now have the Docker image gbdx-gpu that can run Theano or Caffe on a GPU. In the following section, we will create a GBDX task that trains a CNN classifier using the GPU.
+We now have the Docker image gbdx-gpu that can run Theano and Keras on a GPU. See [here](https://github.com/PlatformStories/create-task/tree/master/train-cnn/train-cnn-build) for how to build this image with a DcockerFile. In the following section, we will create a GBDX task that trains a CNN classifier using the GPU.
 
 
 ### Convolutional Neural Network
@@ -1270,14 +1260,14 @@ We are going to use the tools we created [above](#using-the-gpu) to create the t
 
 train-cnn has a single directory input port [train_data](https://github.com/PlatformStories/create-task/tree/master/train-cnn/sample-input/train_data). The task expects to find the following two files within train_data:
 
-- *X.npz*: Training images as a numpy array saved in [npz format](http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html). The array should have the following dimensional ordering: (num_images, num_bands, img_rows, img_cols).
-- *y.npz*: Class labels corresponding to training images as a numpy array saved in npz format.
+- **X.npz**: Training images as a numpy array saved in [npz format](http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html). The array should have the following dimensional ordering: (num_images, num_bands, img_rows, img_cols).
+- **y.npz**: Class labels corresponding to training images as a numpy array saved in npz format.
 
 train-cnn also has the optional string input ports bit_depth and nb_epoch. The former specifies the bit depth of the imagery and defaults to '8' and the latter defines the number of training epochs with a default value of '10'. The task produces a trained model in the form of a model architecture file model_architecture.json and a trained weights file model_weights.h5. These two outputs will be stored in the S3 location specified by the output port trained_model.
 
 #### The Code
 
-The code of train_cnn.py is shown below.
+The code of train-cnn.py is shown below.
 
 ```python
 import os
@@ -1357,7 +1347,7 @@ if __name__ == '__main__':
         task.invoke()
 ```
 
-Here is what is happening in train_cnn.py:  
+Here is what is happening in train-cnn.py:  
 
 Define the **TrainCnn** class that inherits from **GbdxTaskInterface**, read the input ports, and load the images and labels to X_train and y_train, respectively.
 
@@ -1449,7 +1439,7 @@ if __name__ == '__main__':
 
 #### The Docker Image
 
-train-cnn requires a Docker image that can access the GPU. We build the Docker image train-cnn-docker-image by pulling the Theano gbdx-gpu image that we created [above](#getting-a-gpu-compatible-image) and copying in train_cnn.py and gbdx_task_interface.py.  
+train-cnn requires a Docker image that can access the GPU. We build the Docker image train-cnn-docker-image by pulling the Theano gbdx-gpu image that we created [above](#getting-a-gpu-compatible-image) and copying in train-cnn.py and gbdx_task_interface.py.  
 
 Pull [naldeborgh/gbdx-gpu](https://hub.docker.com/r/naldeborgh/gbdx-gpu/) from DockerHub if you do not already have it. Tag the image under your username and rename it to train-cnn-docker-image.
 
@@ -1458,7 +1448,7 @@ docker pull naldeborgh/gbdx-gpu
 docker tag naldeborgh/gbdx-gpu <your_username>/train-cnn-docker-image
 ```
 
-Run train-cnn-docker-image in detached mode and copy train_cnn.py and gbdx_task_interface.py.
+Run train-cnn-docker-image in detached mode and copy train-cnn.py and gbdx_task_interface.py.
 
 ```bash
 # Run train-cnn-docker-image in detached mode
@@ -1466,7 +1456,7 @@ docker run -itd <your_username>/train-cnn-docker-image
 >>> <container_id>
 
 # Copy code file to the image
-docker cp train_cnn.py <container_id>:/
+docker cp train-cnn.py <container_id>:/
 docker cp gbdx_task_interface.py <container_id>:/
 ```
 
@@ -1477,19 +1467,19 @@ docker commit -m 'add train-cnn scripts' <container_id> <your_username>/train-cn
 docker push <your_username>/train-cnn-docker-image
 ```
 
-This image now has all of the libraries and scripts required by train-cnn. Continue on to the [next section](#testing-the-train-cnn-image) to test the image using the GPU instance created [above](#setting-up-a-device-to-test-your-gpu-image).
+This image now has all of the libraries and scripts required by train-cnn. See [here](https://github.com/PlatformStories/create-task/tree/master/train-cnn/train-cnn-build) to see a sample build of train-cnn-docker-image using a DockerFile. Continue on to the [next section](#testing-the-train-cnn-image) to test the image using the GPU instance created [above](#setting-up-a-device-to-test-your-gpu-image).
 
 #### Testing the Docker Image
 
-We will now test train-cnn-docker-image with sample input to ensure that train_cnn.py runs successfully AND that the GPU is utilized.
+We will now test train-cnn-docker-image with sample input to ensure that train-cnn.py runs successfully AND that the GPU is utilized.
 
-ssh into the AWS GPU instance and clone this repo so that the sample input is on the instance.
+ssh into the AWS GPU instance and clone [this repo](https://github.com/PlatformStories/create-task) so that the sample input is on the instance.
 
 ```bash
 # ssh into the instance
 ssh -i </path/to/key_pair> ubuntu@<your_instance_name>
 
-# clone this repo
+# clone create-task repo
 ubuntu@ip-00-000-00-000:~$ git clone https://github.com/PlatformStories/create-task
 ```
 
@@ -1499,22 +1489,26 @@ Pull train-cnn-docker-image from your DockerHub account onto the instance.
 docker pull <your_username>/train-cnn-docker-image
 ```
 
-Run a container from train-cnn-docker-image. This is where testing on a GPU differs from our previous tests: you must specify which GPU devices the container should use with the ```--device``` flag:
+Run a container from train-cnn-docker-image. This is where testing on a GPU differs from our previous tests: you must specify which GPU devices the container should use, defined by ```curl http://localhost:3476/v1.0/docker/cli```.
 
 ```bash
-docker run --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia0 -v ~/PlatformStories/create-task/train-cnn/sample-input:/mnt/work/input/ -it <your_username>/train-cnn-docker-image /bin/bash
+docker run `curl http://localhost:3476/v1.0/docker/cli` -v \
+    ~/PlatformStories/create-task/train-cnn/sample-input:/mnt/work/input/ \
+    -it <your_username>/train-cnn-docker-image /bin/bash
 ```
 
-Run train_cnn.py. In this step we confirm that the container is using the GPU and that the script runs without errors.
+Run train-cnn.py. In this step we confirm that the container is using the GPU and that the script runs without errors.
 
 ```bash
-root@984b2508233b:/build# python /train_cnn.py
->>> Using Theano backend.
->>> Using gpu device 0: GRID K520 (CNMeM is enabled with initial size: 90.0% of memory, cuDNN not available)
->>> Epoch 1/2
->>> 60000/60000 [==============================] - 27s - loss: 0.3710 - acc: 0.8869
->>> Epoch 2/2
->>> 60000/60000 [==============================] - 27s - loss: 0.1292 - acc: 0.9622
+root@984b2508233b:/build# python /train-cnn.py
+
+# You should see the following output
+Using Theano backend.
+Using gpu device 0: GRID K520 (CNMeM is enabled with initial size: 90.0% of memory, cuDNN 4008)
+Epoch 1/2
+60000/60000 [==============================] - 7s - loss: 0.3776 - acc: 0.8827
+Epoch 2/2
+60000/60000 [==============================] - 7s - loss: 0.1431 - acc: 0.9570
 ```
 
 The second line of STDOUT indicates that the container is indeed using the GPU! The lines that follow indicate that the model is being trained.
@@ -1529,7 +1523,7 @@ root@984b2508233b:/build# ls /mnt/work/output/trained_model
 
 #### Task Definition
 
-Defining a task that runs on a GPU is very similar to defining regular tasks. The one difference is in the containerDescriptors section: you must set the 'type' key to 'GPUDOCKER' (as opposed to 'DOCKER'), and the 'domain' property to 'gpu'. Here is the definition for train-cnn:
+Defining a task that runs on a GPU is very similar to defining regular tasks. The one difference is in the containerDescriptors section: you must set the 'domain' property to 'nvidiagpu'. Here is the definition for train-cnn:
 
 ```json
 {
@@ -1567,23 +1561,24 @@ Defining a task that runs on a GPU is very similar to defining regular tasks. Th
     ],
     "containerDescriptors": [
         {
-            "type": "GPUDOCKER",
+            "type": "DOCKER",
             "properties": {
                 "image": "naldeborgh/train-cnn-docker-image",
-                "domain": "gpu"
+                "domain": "nvidiagpu"
             },
-            "command": "python /train_cnn.py",
+            "command": "python /train-cnn.py",
             "isPublic": true
         }
     ]
 }
+
 ```
 
 Now all we have to do is register train-cnn; follow the same steps as for hello-gbdx and rf-pool-classifier.
 
 #### Executing the Task
 
-It's time to try out train-cnn. We'll use the publicly available [MNIST dataset](http://yann.lecun.com/exdb/mnist/) which contains 60,000 images of handwritten digits to train a model to recognize handwritten digits. Figure 6 shows some example images.
+It's time to try out train-cnn. We'll use the publicly available [MNIST dataset](http://yann.lecun.com/exdb/mnist/), which contains 60,000 images of handwritten digits to train a model to recognize handwritten digits. Figure 6 shows some example images.
 
 ![mnist.png]({{ site.baseurl }}/images/create-task/mnist.png)
 *Figure 6: Sample digit images from the MNIST dataset.*
@@ -1592,7 +1587,7 @@ Open an iPython terminal, create a GBDX interface and get the input location.
 
 ```python
 from gbdxtools import Interface
-from os.path
+from os.path import join
 import random, string
 
 gbdx = Interface()
