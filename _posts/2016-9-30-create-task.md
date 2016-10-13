@@ -1022,9 +1022,7 @@ This section will walk you through setting up a local GPU instance for building 
 
 All GBDX GPU workers use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker#nvidia-docker) to allow running containers to leverage their GPU devices. Here are the steps for setting up an AWS instance with nvidia-docker, which you will need to test your GPU-compatible Docker image.
 
-On AWS launch ami-d05e75b8. Choose a GPU instance of type [EC2 g2.2xlarge](https://aws.amazon.com/ec2/instance-types/#g2). At least 20GB of storage is recommended.  
-
-ssh into your instance and install CUDA repository.
+On AWS launch ami-d05e75b8. Choose a GPU instance of type [EC2 g2.2xlarge](https://aws.amazon.com/ec2/instance-types/#g2). At least 20GB of storage is recommended. Then ssh into your instance and install CUDA repository.
 
 ```bash
 ssh -i <path/to/key_pair> ubuntu@<instance_id>
@@ -1107,10 +1105,9 @@ Replace any existing entries in the file with the following:
 deb https://apt.dockerproject.org/repo ubuntu-trusty main
 ```
 
-Update APT package index and purge the old repo if it exists.
+Purge the old repo if it exists.
 
 ```bash
-sudo apt-get update
 sudo apt-get purge lxc-docker
 ```
 
