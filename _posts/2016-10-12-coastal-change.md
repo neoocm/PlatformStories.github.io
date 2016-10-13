@@ -16,7 +16,6 @@ The example we cover here focuses on Cape Cod, an area which is well known
 
 ![header3.png]({{ site.baseurl }}/images/coastal-change/header3.png)
 
-
 # Contents
 1. [Imagery](#imagery)
 2. [Workflow](#workflow)
@@ -33,6 +32,15 @@ The example we cover here focuses on Cape Cod, an area which is well known
 
 We've picked two images of Cape Cod (MA); the details are shown in Table 1.
 Click on each catalog id to view the imagery.
+
+<!-- Table styling. This is ugly, but that's all we have right now. GFM does not work with Jekyll -->
+<style>
+table, th, td{
+    border:1px solid #000000;
+    padding: 5px;
+}
+</style>
+
 
 | **field** | **image 1** | **image 2** |
 | :-------- |:-------- | :-------- |
