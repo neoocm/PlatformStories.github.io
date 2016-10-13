@@ -266,7 +266,7 @@ indicate the region of water loss; the brighter the pixel, the larger the distan
 The maximum pixel intensity is 487; since the resolution is about 2m/pixel, an approximate calculation reveals that the maximum water retreat in this AOI is 974m! Note that the DDT is sensitive to pixel [isotropy](https://en.wikipedia.org/wiki/Isotropy). Consequently, in order for these calculations to be accurate, input images given in lat,long should be converted to UTM.
 
 ![post_loss_1_ddt_gray.png]({{ site.baseurl }}/images/coastal-change/post_loss_1_ddt_gray.png)
-![post_loss_1_ddt_rgb2b.png]({{ site.baseurl }}/images/coastal-change/post_loss_1_ddt_rgb2b.png)
+![post_loss_1_ddt_rgb.png]({{ site.baseurl }}/images/coastal-change/post_loss_1_ddt_rgb.png)
 
 *Figure 11. The DDT of the loss map (top) and a visual impression in pseudocolor (bottom).*
 
@@ -282,7 +282,7 @@ Figure 12 shows an AOI where the landscape has changed dramatically between pre 
 Figure 13, left, shows the DDT of the gain map. The two grayscale ribbons correspond to areas where water has appeared in place of land; the pixel intensity captures the degree to which the water has advanced to reach that very point. A visual impression in pseudocolor is shown on the right. The dark green line indicates that the maximum expansion has occurred in the center of the ribbon; water moved in  from both directions to cover that stretch of land! In this case, the maximum pixel intensity is 188 which implies that the extent of the water gain in this AOI is 376m.
 
 ![post_gain_1_ddt_gray.png]({{ site.baseurl }}/images/coastal-change/post_gain_1_ddt_gray.png)
-![post_gain_1_ddt_rgb3b.png]({{ site.baseurl }}/images/coastal-change/post_gain_1_ddt_rgb3b.png)
+![post_gain_1_ddt_rgb.png]({{ site.baseurl }}/images/coastal-change/post_gain_1_ddt_rgb.png)
 
 *Figure 13. The DDT of the gain map (top) and a visual impression in pseudocolor (bottom).*
 
@@ -336,8 +336,36 @@ where random_str is random string identifier. Here is the [entire workflow](http
 
 You can explore the tristate image overlaid on the pre image [here]({{ site.baseurl }}/pages/coastal-change/tristate.html). To create this slippy map, we've ingested the pre AOP-ready image as well as the tristate map into [IDAHO](http://gbdxdocs.digitalglobe.com/docs/idaho-course) format, and used [Leaflet](http://leafletjs.com/) to call the IDAHO TMS service.
 
+We had one of our team members who is a Cape Cod local have a look at the results.
+
+Figure 14 is a screenshot of the Chatham area. The red and green areas are most likely due to tidal
+effects and shifting sand bars.
+
+![ChathamLandChange.png]({{ site.baseurl }}/images/coastal-change/ChathamLandChange.png)
+
+*Figure 14. Chatham area.*
+
+Figure 15 shows the area around the former Marconi transatlantic wireless station! Red corresponds to tidal
+marsh which our water mask picks up as land.
+
+![MarconiStationLandChange.png]({{ site.baseurl }}/images/coastal-change/MarconiStationLandChange.png)
+
+*Figure 15. Marconi transatlantic wireless station area.*
+
+Figure 16 shows the area around Rock harbor. Red corresponds to tidal flats which are mostly covered by shallow water.
+The arrow on the right points to Nauset Inlet, an area known for tidal changes and shifting sand bars. You can also barely see the remains of USS Longstreet underwater!
+
+![RockHarbourLandChange.png]({{ site.baseurl }}/images/coastal-change/RockHarbourLandChange.png)
+
+*Figure 16. Rock harbor and Nauset Inlet area.*
+
+Finally, Figure 17 examines some of the changes observed within the peninsula. Red corresponds to seasonal water retreat while green are possible look angle artifacts.
+
+![WellfleetPondsLandChange.png]({{ site.baseurl }}/images/coastal-change/WellfleetPondsLandChange.png)
+
+In summary, red in the bays and on the western shoreline can be attributed to normal tidal activity. Green and red on the beaches facing the Atlantic Ocean can be mostly attributed to sand bar changes and erosion.
+
 We ran the workflow for Cape Cod; you can easily imagine running the exact same workflow for the East Coast of the United States. What you need are the pairs of pre and post imagery; you can use our [catalog](gbdx.geobigdata.io) to find these. You can also experiment with this workflow to detect continental water changes, along rivers and lakes.
 
 Attempts to estimate coastal change have been made by other parties, including [USGS](https://coastalmap.marine.usgs.gov/FlexWeb/national/ShoreLC/). The key advantages of the proposed workflow are precision and scaleability; it runs on high-resolution multi-spectral imagery and it runs on GBDX.
-
-The results of this workflow can be used by interested parties to study the causes of coastal change; tide, sea currents, climate change or any combination thereof could be potential causes. We are currently working on a more thorough quality assessment of our results.
+We are currently working on a more thorough quality assessment of our results.
