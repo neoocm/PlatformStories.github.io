@@ -30,10 +30,10 @@ Our GBDX workflow is shown in the following figure.
 
 ### Preprocessing
 
-The workflow begins with the file [properties.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/train_cnn_classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/adelaide.html) by entering your GBDX credentials when prompted.
+The workflow begins with the file [properties.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/train-cnn-classifier/properties.geojson). This file contains a collection of polygons in (longitude, latitude) coordinates, each representing a property. Each polygon has two attributes: an image_id, which determines the DG catalog id of the satellite image corresponding to that polygon, and a feature_id, which is simply a number that uniquely identifies that property. This particular file only contains properties from the image 1040010014800C00, which is a cloudless WV03 image over Adelaide, Australia. You can see this image [here]({{ site.baseurl}}/pages/swimming-pools/adelaide.html) by entering your GBDX credentials when prompted.
 You can also view the image thumbnail by searching for 1040010014800C00 [here](https://discover.digitalglobe.com/) and navigating to Adelaide using the map.
 
-The main idea is to label a small percentage of the property parcels using [crowdsourcing](http://www.tomnod.com/) in order to create a training set [train.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/train_cnn_classifier/train.geojson). We then use *train.geojson* to train a CNN-based classifier to identify the presence of a swimming pool in each of the remaining unlabeled properties of *properties.geojson* (referred to as [target.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/deploy_cnn_classifier/target.geojson)). For object classification at a continental or global scale this procedure is a must; it would be virtually impossible to label millions of properties manually in a reasonable amount of time.
+The main idea is to label a small percentage of the property parcels using [crowdsourcing](http://www.tomnod.com/) in order to create a training set [train.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/train-cnn-classifier/train.geojson). We then use *train.geojson* to train a CNN-based classifier to identify the presence of a swimming pool in each of the remaining unlabeled properties of *properties.geojson* (referred to as [target.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/deploy_cnn_classifier/target.geojson)). For object classification at a continental or global scale this procedure is a must; it would be virtually impossible to label millions of properties manually in a reasonable amount of time.
 
 Before executing the workflow, the raw image has to be ordered from the factory and processed into a format that is usable by a machine learning algorithm. The last part is trickier than it sounds. We lovingly refer to it as UGHLi: Undifferentiated Geospatial Heavy Lifting. In this example, it involves orthorectification, atmospheric compensation, pansharpening and dynamic range adjustment; all this can be achieved with a single GBDX task [AOP_Strip_Processor](http://gbdxdocs.digitalglobe.com/docs/advanced-image-preprocessor). For the purpose of this example, the UGHLi'ed image already sits in an S3 bucket.
 
@@ -42,7 +42,7 @@ Before executing the workflow, the raw image has to be ordered from the factory 
 The workflow requires three inputs.
 
 - A collection of labeled polygons in geojson format (the training data). In this example, the labeled properties are found in
-[train.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/train_cnn_classifier/train.geojson).
+[train.geojson](https://github.com/PlatformStories/swimming-pools/blob/master/train-cnn-classifier/train.geojson).
 
   ![train_geojson.png]({{ site.baseurl }}/images/swimming-pools/train_geojson.png)  
   *A sample of labeled properties.*
@@ -61,10 +61,10 @@ The workflow requires three inputs.
 
 The workflow involves two tasks.
 
-- [train_cnn_classifier](https://github.com/PlatformStories/swimming-pools/blob/master/docs/train_cnn_classifier.md): Trains a CNN classifier on the polygons in train.geojson. Required inputs are train.geojson, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model.
+- [train-cnn-classifier](https://github.com/PlatformStories/swimming-pools/blob/master/docs/train-cnn-classifier.md): Trains a CNN classifier on the polygons in train.geojson. Required inputs are train.geojson, associated image strips, and class names as a string argument. This task returns the architecture and weights of the trained model.
 
-   ![train_cnn_classifier.png]({{ site.baseurl }}/images/swimming-pools/train_cnn_classifier.png)  
-   *train_cnn_classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
+   ![train-cnn-classifier.png]({{ site.baseurl }}/images/swimming-pools/train-cnn-classifier.png)  
+   *train-cnn-classifier takes train.geojson and imagery, and produces a trained CNN classifier.*
 
    You can find more information on the algorithm used in this example
    [here](https://developer.digitalglobe.com/gbdx-poolnet-identifying-pools-satellite-imagery/) and
@@ -119,13 +119,13 @@ input_location = 's3://gbd-customer-data/58600248-2927-4523-b44b-5fec3d278c09/pl
 Create a train_task object and set the required inputs:
 
 ```python
-train_task = gbdx.Task('train_cnn_classifier')
+train_task = gbdx.Task('train-cnn-classifier')
 train_task.inputs.images = join(input_location, 'images')
 train_task.inputs.geojson = join(input_location, 'train_geojson')
 train_task.inputs.classes = 'No swimming pool, Swimming pool'     # Classes exactly as they appear in train.geojson
 ```
 
-In training our model, we can set optional hyper-parameters. See the [docs](https://github.com/PlatformStories/swimming-pools/blob/master/docs/train_cnn_classifier.md) for detailed information. Training should take around 3 hours to complete.
+In training our model, we can set optional hyper-parameters. See the [docs](https://github.com/PlatformStories/swimming-pools/blob/master/docs/train-cnn-classifier.md) for detailed information. Training should take around 3 hours to complete.
 
 ```python
 train_task.inputs.nb_epoch = '30'
@@ -187,7 +187,7 @@ You can download your outputs as follows.
 ```python
 ! mkdir trained_model
 
-# train_cnn_classifier sample output: final model
+# train-cnn-classifier sample output: final model
 gbdx.s3.download(join(output_location, 'trained_model/model_architecture.json'), 'trained_model/')
 gbdx.s3.download(join(output_location, 'trained_model/model_weights.h5'), 'trained_model/')
 gbdx.s3.download(join(output_location, 'trained_model/test_report.txt'), 'trained_model/')
