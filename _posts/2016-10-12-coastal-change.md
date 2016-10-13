@@ -330,14 +330,13 @@ wf.execute()
 ```
 
 The outputs will be saved under platform-stories/trial-runs/random_str within your bucket/prefix,
-where random_str is random string identifier. You can explore the tristate image overlaid on the pre image [here]({{ site.baseurl }}/pages/coastal-change/tristate.html). To create this slippy map, we've ingested the pre AOP-ready image as well as the tristate map into [IDAHO](http://gbdxdocs.digitalglobe.com/docs/idaho-course) format, and used [Leaflet](http://leafletjs.com/) to call the IDAHO TMS service.  
-
-Here is the [entire workflow](https://github.com/PlatformStories/coastal-change/blob/master/workflow.py).
+where random_str is random string identifier. Here is the [entire workflow](https://github.com/PlatformStories/coastal-change/blob/master/workflow.py).
 
 # Discussion
 
-We ran the workflow for Cape Cod; you can easily imagine running the exact same workflow for the East Coast of the United States.
-What you need are the pairs of pre and post imagery; you can use our [catalog](gbdx.geobigdata.io) to find these. You can also experiment with this workflow to detect continental water changes, along rivers and lakes.
+You can explore the tristate image overlaid on the pre image [here]({{ site.baseurl }}/pages/coastal-change/tristate.html). To create this slippy map, we've ingested the pre AOP-ready image as well as the tristate map into [IDAHO](http://gbdxdocs.digitalglobe.com/docs/idaho-course) format, and used [Leaflet](http://leafletjs.com/) to call the IDAHO TMS service.
+
+We ran the workflow for Cape Cod; you can easily imagine running the exact same workflow for the East Coast of the United States. What you need are the pairs of pre and post imagery; you can use our [catalog](gbdx.geobigdata.io) to find these. You can also experiment with this workflow to detect continental water changes, along rivers and lakes.
 
 Attempts to estimate coastal change have been made by other parties, including [USGS](https://coastalmap.marine.usgs.gov/FlexWeb/national/ShoreLC/). The key advantages of the proposed workflow are precision and scaleability; it runs on high-resolution multi-spectral imagery and it runs on GBDX.
 
