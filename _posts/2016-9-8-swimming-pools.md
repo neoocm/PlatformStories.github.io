@@ -167,7 +167,7 @@ output_location = join('platform-stories/trial-runs', random_str)
 
 # save workflow outputs
 workflow.savedata(train_task.outputs.trained_model, join(output_location, 'trained_model'))
-workflow.savedata(deploy_task.outputs.classified_shapefile, join(output_location, 'classified_geojson'))
+workflow.savedata(deploy_task.outputs.classified_geojson, join(output_location, 'classified_geojson'))
 ```
 
 Execute the workflow:
