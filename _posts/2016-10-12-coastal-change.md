@@ -3,11 +3,10 @@ layout: post
 title: Monitoring and measuring coastal change
 ---
 
-Coastal change is an accelerating global phenomenon that is mainly attributed to climate change, extreme weather and powerful sea currents. It has the potential to [threaten communities](http://www.nytimes.com/2016/09/04/science/flooding-of-coast-caused-by-global-warming-has-already-begun.html?_r=0)
+Coastal change is a global phenomenon that is attributed to tides, powerful sea currents and overall climate change. It has the potential to [threaten communities](http://www.nytimes.com/2016/09/04/science/flooding-of-coast-caused-by-global-warming-has-already-begun.html?_r=0)
 and [local economies](https://www.bostonglobe.com/lifestyle/real-estate/2014/09/13/climate-change-concerns-weigh-cape-home-buying-decisions/SnTafe2lwWiOsLt5AtezHK/story.html)
-of coastal towns and cities.
-Accurate monitoring of coastal change could offer valuable insight into climate change and provide input to climate models, as well as
-help in [flooding disaster preparedness and mitigation](https://msc.fema.gov/portal).   
+of coastal towns and cities. Accurate monitoring and measurement of coastal change
+can provide valuable data for scientific studies of coastal evolution, as well as guide [flooding disaster preparedness and mitigation](https://msc.fema.gov/portal).   
 
 We developed an end-to-end GBDX workflow for coastal change detection and measurement at the **native resolution** of our 8-band multispectral imagery. All you need to run the workflow is a GBDX account and Python. The workflow can measure coastal changes **at the meter level** and **at unprecedented scale**.
 
