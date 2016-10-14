@@ -32,7 +32,7 @@ A GBDX [**task**](http://gbdxdocs.digitalglobe.com/docs/task-and-workflow-course
 
 Tasks can be chained together in a **workflow** where one task's outputs can be the inputs to one or more different tasks. In this manner, more complicated processes can be executed than what is possible within a single task. For example, you can imagine a ship detection workflow consisting of the following tasks: (a) pansharpen the raw satellite image (b) create a sea mask (c) look for boats in the sea.   
 
-When a workflow is executed, tasks are scheduled appropriately by a **scheduler** and the system generates status indicators that are available via the GBDX API. Using the task **definition** on the **task registry**, each task is executed by a **worker node** within a **docker container** that contains the task code and its dependencies in an encapsulated environment. You can find additional information on GBDX in the [GBDX documentation](http://gbdxdocs.digitalglobe.com/).
+When a workflow is executed, tasks are scheduled appropriately by a scheduler and the system generates status indicators that are available via the GBDX API. Using the task definition in the **task registry**, each task is executed by a worker node within a docker container that contains the task code and its dependencies in an encapsulated environment. You can find additional information on GBDX in the [GBDX documentation](http://gbdxdocs.digitalglobe.com/).
 
 
 ## Hello GBDX
@@ -91,7 +91,7 @@ The name of the input directory is obtained using the ```get_input_data_port``` 
 # Get inputs
 input_dir = self.get_input_data_port('data_in')
 ```
-data_in is the task **directory input port**. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'.
+data_in is the task directory input port. What ```get_input_data_port('data_in')``` does behind the scenes is return the string 'mnt/work/input/data_in'.
 
 The value of the input string port message is obtained using the ```get_input_string_port``` function (also inherited from **GbdxTaskInterface**).  
 
@@ -99,7 +99,7 @@ The value of the input string port message is obtained using the ```get_input_st
 message = self.get_input_string_port('message', default='No message!')
 ```
 
-message is one of possibly many task **string input ports**. What ```get_input_string_port('message', default='No message!')``` does behind the scenes is read the value of message from the file ports.json which is found under mnt/work/input/. (Keep in mind that you don't have to worry about these inner workings if you don't want to!) If the value is not specified, it returns a default value.
+message is one of possibly many task string input ports. What ```get_input_string_port('message', default='No message!')``` does behind the scenes is read the value of message from the file ports.json which is found under mnt/work/input/. (Keep in mind that you don't have to worry about these inner workings if you don't want to!) If the value is not specified, it returns a default value.
 
 The name of the output directory is obtained using the ```get_output_data_port``` function (inherited from **GbdxTaskInterface**) and the output directory is created.  
 
@@ -109,7 +109,7 @@ output_dir = self.get_output_data_port('data_out')
 os.makedirs(output_dir)
 ```
 
-data_out is the task **directory output port**. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'.  Note that **it is the responsibility of the script** to create the output directory.
+data_out is the task directory output port. What ```get_output_data_port('data_out')``` does behind the scenes is return the string 'mnt/output/data_out'.  Note that **it is the responsibility of the script** to create the output directory.
 
 out.txt is created and saved in the output directory:
 
@@ -211,7 +211,7 @@ REPOSITORY                             TAG                 IMAGE ID            C
 naldeborgh/python_vim                  latest              ddd4c238e314        About an hour ago   461.1 MB
 ```
 
-Finally, you can tag the image under your username. This enables you to edit the image and push it to your personal DockerHub repository. Name the image hello-gbdx-docker-image, as we will be moving our hello-gbdx task code into it shortly.
+Finally, you can tag the image under your username. This enables you to edit the image and push it to your personal DockerHub repository. Name the image hello-gbdx-docker-image, as we will be moving our code into it shortly.
 
 ```bash
 docker tag naldeborgh/python_vim <your_username>/hello-gbdx-docker-image
@@ -245,7 +245,7 @@ docker run -itd <your_username>/hello-gbdx-docker-image
 >>> ff567ca72fa0ed6cdfbe0a5c02ea3e04f88ec49239344f217ce1049651d01344
 ```
 
-The value returned is the *container id*. Make note of this because we will need it.
+The value returned is the container id. Make note of this because we will need it.
 
 We now use the ```docker cp``` command to copy our scripts into the container. The format of this command is as follows: ```docker cp <filename> <container_id>:<container_dest_path>```.
 
@@ -267,7 +267,7 @@ gbdx_task_interface.py   hello_gbdx.py   boot  etc   lib    media  opt   root  s
 
 You may detach from the container (sending it back to background) without stopping it using the following escape sequence: <kbd>Ctrl</kbd>-<kbd>p</kbd> + <kbd>Ctrl</kbd>-<kbd>q</kbd>  
 
-Up until now we have been working in a container and not the image. If we were to stop the container now, all of our changes would be lost and hello-gbdx-docker-image image would remain unchanged. To permanently update the image we must commit our changes to it. This command will save the changes you made to your container to hello-gbdx-docker-image.
+If we were to stop the container now, all of our changes would be lost and hello-gbdx-docker-image image would remain unchanged. To permanently update the image we must commit our changes to it. This command will save the changes you made to your container to hello-gbdx-docker-image.
 
 ```bash
 # Commit the changes from the container to the image
