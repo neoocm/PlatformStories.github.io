@@ -11,7 +11,7 @@ setup your machine learning task to run on a GPU.
 
 ![header.png]({{ site.baseurl }}/images/create-task/header.png)
 
-# Contents
+## Contents
 
 1. [Background](#background)
 2. [Hello GBDX](#hello-gbdx)
@@ -26,7 +26,7 @@ setup your machine learning task to run on a GPU.
     - [Convolutional Neural Network](#convolutional-neural-network)
 
 
-# Background
+## Background
 
 A GBDX [**task**](http://gbdxdocs.digitalglobe.com/docs/task-and-workflow-course) is a process that performs a specific action on its inputs and generates a set of outputs. In the vast majority of cases, inputs and outputs consist of satellite image files (usually in tif format), vector files (shapefile, geojson), text files and various metadata files (XML, IMD and other).
 
@@ -35,7 +35,7 @@ Tasks can be chained together in a **workflow** where one task's outputs can be 
 When a workflow is executed, tasks are scheduled appropriately by a scheduler and the system generates status indicators that are available via the GBDX API. Using the task definition in the **task registry**, each task is executed by a worker node within a docker container that contains the task code and its dependencies in an encapsulated environment. You can find additional information on GBDX in the [GBDX documentation](http://gbdxdocs.digitalglobe.com/).
 
 
-# Hello GBDX
+## Hello GBDX
 
 In this section, we will write a Python script for our Hello GBDX task, hello-gbdx.
 The script [hello_gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) does the following: it obtains a list of the task input files and prints this list
@@ -135,23 +135,23 @@ at a user-specified S3 location, as well as feed those to the directory input po
 
 In the next section we go through the steps of creating a Docker image for hello-gbdx.
 
-# Dockerizing
+## Dockerizing
 
 Dockerizing is a crucial step to get your code to run as a task on GBDX.
 In this section, we will provide a high level overview of [Docker](https://www.docker.com/) and review its terminology. Next, we'll show you how to build your own hello-gbdx Docker image and run a container locally. At the end of this section, you will have an image that can be used to execute hello-gbdx, and have all of the materials necessary to register hello-gbdx on GBDX.
 
-## About Docker
+### About Docker
 
 Docker is a software containerization platform that allows developers to package up an application with its dependencies, and deliver it to a user in a single, self-sufficient package (referred to as a container).
 
 ![docker_workflow.png]({{ site.baseurl }}/images/create-task/docker_workflow.png)
 *Figure 1: Docker allows you to deliver various libraries and scripts in a lightweight package. Docker is required to create a task on GBDX.*
 
-## Docker and GBDX
+#### Docker and GBDX
 
 When a task is run on GBDX, a Docker container containing the task code, all its required dependencies, and the operating system is run by a worker node. Docker provides an efficient method for delivering the task code and its dependencies to the worker in an encapsulated environment.
 
-## Docker Lingo
+#### Docker Lingo
 
 Because Docker can be confusing if you are not used to it, we will define some terms you will encounter in this tutorial. You can consult the [Docker glossary](https://docs.docker.com/engine/reference/glossary/#base-image) for more information.
 
@@ -164,7 +164,7 @@ It is only necessary to create a DockerFile if you elect to create your image fr
 
 * <b>DockerHub</b>: A repository of images. You can pull and edit these images for your own use, analogous to cloning or forking a GitHub repo.
 
-## Creating a Docker Image
+### Creating a Docker Image
 
 Before creating your image [sign up](https://hub.docker.com/) for a DockerHub account and follow [these](https://docs.docker.com/engine/getstarted/step_one/) instructions to install Docker toolbox on your machine. This will allow you to create, edit, and push your Docker images locally from the command line. In this section, we review two methods for creating a Docker image:
 
@@ -172,7 +172,7 @@ Before creating your image [sign up](https://hub.docker.com/) for a DockerHub ac
 
 - [Building an image from scratch](#building-an-image-with-a-dockerfile) using a DockerFile. If you elect to go this route you can skip the next two sections. (You may wish to read through them anyway as it is useful to know how to edit a Docker image without use of a DockerFile.)
 
-## Pulling an Image from DockerHub
+#### Pulling an Image from DockerHub
 
 Before choosing an image to work with, you should choose an operating system and have a list of the libraries your task requires. hello-gbdx requires Python to run, so we will look for a simple base image with Python packages installed. Note that unnecessary libraries and packages will only slow down our container and the task will consequently take longer to run. There are many publicly available images that you can [search](https://docs.docker.com/engine/tutorials/dockerrepos/#searching-for-images) through on DockerHub, so chances are you'll be able to find one that suits your needs. Note that you may install additional dependencies on the image once you've pulled it from DockerHub, so it is not necessary to find one with all of the the required libraries.   
 
@@ -231,7 +231,7 @@ root@ff567ca72fa0:/ ls
 
 Congratulations! You now have your own docker image to which you can add your code.  
 
-## Adding Your Code to the Image
+#### Adding Your Code to the Image
 
 ![docker_commit_wf.png]({{ site.baseurl }}/images/create-task/docker_commit_wf.png)
 *Figure 2: Adding code to a docker image.*
@@ -298,7 +298,7 @@ docker push <your_username>/hello-gbdx-docker-image
 
 Our image is ready! If you would like to learn how to build an image from scratch continue on the [next section](#building-an-image-with-a-dockerfile). Otherwise, move on to [testing the image locally](#testing-a-docker-image).
 
-## Building an Image with a DockerFile
+#### Building an Image with a DockerFile
 
 Feeling a little ambitious? You can build your own image from scratch with a DockerFile.
 For more information on DockerFiles see [here](https://docs.docker.com/engine/reference/builder/) and [here](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
@@ -366,7 +366,7 @@ docker push <your username>/hello-gbdx-docker-image
 
 Our Docker image is now ready to be tested with sample inputs.
 
-## Testing a Docker Image
+### Testing a Docker Image
 
 At this point you should have hello-gbdx-docker-image which includes hello_gbdx.py.
 In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/sample-input in this repo](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input) contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/data_in), the contents of which will be written to out.txt (in this example, this is simply the file data_file.txt) (b) the file [ports.json](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/ports.json) which
@@ -418,11 +418,11 @@ This is my message!
 Congratulations, your task is working as expected! The next step is to [create a task definition](#defining-the-task), which will be used to [register](#registering-a-task-on-gbdx) hello-gbdx on the platform.
 
 
-# Registering a Task on GBDX
+## Registering a Task on GBDX
 
 Now that we have hello-gbdx-docker-image working locally, we can finally define hello-gbdx and then register it to the GBDX task registry.
 
-## Defining the Task
+### Defining the Task
 
 The task definition is a [json file](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-definition.json) that contains a description of the task functionality, a list of its inputs and outputs, and the Docker image that needs to be run when the task is executed.
 
@@ -543,7 +543,7 @@ We review the four parts of this definition below.
 - <b>command</b>: The command to run within the container.
 
 
-## GBDX Task Registry
+### GBDX Task Registry
 
 We now have all the required material to register hello-gbdx: [a Docker image on DockerHub](#creating-a-docker-image) and the [task definition](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-definition.json).
 
@@ -616,11 +616,11 @@ gbdx.task_registry.delete('hello-gbdx')
 You have created a basic yet fully functional GBDX task using Docker and gbdxtools. The next section covers the process of creating more complicated tasks that can run machine learning algorithms.
 
 
-# Machine Learning on GBDX
+## Machine Learning on GBDX
 
 In the last section, we created a simple task that generates a text file with a list of the contents of the input directory and a user defined message. Chances are you're looking to do a bit more with your task. In this section, you will learn how to create a task that runs a standard machine learning (ML) algorithm such as a random forest classifier, and how to setup a ML task that utilizes a Convolutional Neural Network (CNN) so that it can be executed on a worker with a GPU.
 
-## Random Forest Classifier
+### Random Forest Classifier
 
 In this example, we will create the task rf-pool-classifier that trains a [random forest classifier](https://en.wikipedia.org/wiki/Random_forest) to classify polygons of arbitrary geometry into those that contain swimming pools and those that don't. For more information on this algorithm see [here](https://github.com/DigitalGlobe/mltools/tree/master/examples/polygon_classify_random_forest) and [here](http://blog.tomnod.com/crowd-and-machine-combo).
 
@@ -629,7 +629,7 @@ In this example, we will create the task rf-pool-classifier that trains a [rando
 
 rf-pool-classifier has two directory input ports: geojson and image. Within geojson and image, the task expects to find a file train.geojson, which contains labeled polygons from both classes, and a tif image file from which the task will extract the pixels corresponding to each polygon, respectively (Figure 4). The task also has the input string port n_estimators that determines the number of trees in the random forest; specifying a value is optional and the default is '100'. The task produces a trained model in [pickle](https://docs.python.org/2/library/pickle.html) format, which is saved in the S3 location specified by the output port trained_classifier.
 
-## The Code
+#### The Code
 
 The code of rf_pool_classifier.py is shown below; the structure is the same as hello_gbdx.py.
 
@@ -769,7 +769,7 @@ if __name__ == "__main__":
         task.invoke()
 ```
 
-## The Docker Image
+#### The Docker Image
 
 rf-pool-classifier requires more libraries than hello-gbdx, such as [numpy](http://www.numpy.org/) and [mltools](https://github.com/DigitalGlobe/mltools). We build the Docker image rf-pool-classifier-docker-image by pulling [naldeborgh/gdal_base](https://hub.docker.com/r/naldeborgh/gdal_base/) and installing the required libraries.
 
@@ -840,7 +840,7 @@ docker build -t <your_username>/rf-pool-classifier-docker-image .
 
 The DockerFile and scripts can be found [here](https://github.com/PlatformStories/create-task/tree/master/rf-pool-classifier/rf-pool-classifier-build).
 
-## Testing the Docker Image
+#### Testing the Docker Image
 
 We can now test rf-pool-classifier-docker-image on our local machine before defining rf-pool-classifier and registering it on the platform. Just as in the case of [hello-gbdx](#testing-a-docker-image), we will mimic the platform by mounting sample input to a container and then executing rf_pool_classifier.py.
 
@@ -895,7 +895,7 @@ root@91d9d5cd9570:/ ls mnt/work/output/trained_classifier
 
 You can now define and register rf-pool-classifier!
 
-## Task Definition
+#### Task Definition
 
 The definition for rf-pool-classifier is provided below:
 
@@ -957,7 +957,7 @@ gbdx = Interface()
 gbdx.task_registry.register(json_filename = 'rf-pool-classifier-definition.json')
 ```
 
-## Executing the Task
+#### Executing the Task
 
 We will now run through a sample execution of rf-pool-classifier using gbdxtools.
 
@@ -1012,13 +1012,13 @@ In the next section, we will cover how to make use of the GPU for compute-intens
 that rely on it.
 
 
-## Using the GPU
+### Using the GPU
 
 Until now, we have been running our tasks on a CPU device. For certain ML applications such as deep learning that are very compute-intensive, the GPU offers order-of-magnitude performance improvement compared to the CPU. GBDX provides the capability of running a task on a GPU worker. This requires configuring the Docker image and defining the task appropriately.
 
 This section will walk you through setting up a local GPU instance for building and testing your Docker image, and then building a GPU-compatible Docker image, i.e., a Docker image that can access the GPU on the node on which it is run.
 
-## Setting up a GPU instance
+#### Setting up a GPU instance
 
 All GBDX GPU workers use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker#nvidia-docker) to allow running containers to leverage their GPU devices. Here are the steps for setting up an AWS instance with nvidia-docker, which you will need to test your GPU-compatible Docker image.
 
@@ -1161,7 +1161,7 @@ nvidia-docker run --rm nvidia/cuda nvidia-smi
 +-----------------------------------------------------------------------------+
 ```
 
-## Building a GPU-Compatible Image
+#### Building a GPU-Compatible Image
 
 Now that we have an instance on which to test our GPU tasks, we can create a Docker image that can access the GPU. To do this we simply use the Docker image [nvidia/cuda](https://hub.docker.com/r/nvidia/cuda/) as a base and install any necessary dependencies. nvidia/cuda is set up such that it can run seamlessly on any device using the nvidia-docker plugin, saving us the headache of matching drivers between the Docker image, GBDX worker nodes, and our GPU instance.
 
@@ -1248,7 +1248,7 @@ docker commit -m 'install dependencies, add .theanorc' <container id> <your_user
 We now have the Docker image gbdx-gpu that can run Theano and Keras on a GPU. See [here](https://github.com/PlatformStories/create-task/tree/master/train-cnn/train-cnn-build) for how to build this image with a DcockerFile. In the following section, we will create a GBDX task that trains a CNN classifier using the GPU.
 
 
-## Convolutional Neural Network
+### Convolutional Neural Network
 
 We are going to use the tools we created [above](#using-the-gpu) to create the task 'train-cnn' that trains a [CNN](http://neuralnetworksanddeeplearning.com/chap6.html) classifier using the GPU. The task uses input images and labels to create a trained model (Figure 5).
 
@@ -1262,7 +1262,7 @@ train-cnn has a single directory input port [train_data](https://github.com/Plat
 
 train-cnn also has the optional string input ports bit_depth and nb_epoch. The former specifies the bit depth of the imagery and defaults to '8' and the latter defines the number of training epochs with a default value of '10'. The task produces a trained model in the form of a model architecture file model_architecture.json and a trained weights file model_weights.h5. These two outputs will be stored in the S3 location specified by the output port trained_model.
 
-## The Code
+#### The Code
 
 The code of train-cnn.py is shown below.
 
@@ -1434,7 +1434,7 @@ if __name__ == '__main__':
         task.invoke()
 ```
 
-## The Docker Image
+#### The Docker Image
 
 train-cnn requires a Docker image that can access the GPU. We build the Docker image train-cnn-docker-image by pulling the Theano gbdx-gpu image that we created [above](#getting-a-gpu-compatible-image) and copying in train-cnn.py and gbdx_task_interface.py.  
 
@@ -1466,7 +1466,7 @@ docker push <your_username>/train-cnn-docker-image
 
 This image now has all of the libraries and scripts required by train-cnn. See [here](https://github.com/PlatformStories/create-task/tree/master/train-cnn/train-cnn-build) to see a sample build of train-cnn-docker-image using a DockerFile. Continue on to the [next section](#testing-the-train-cnn-image) to test the image using the GPU instance created [above](#setting-up-a-device-to-test-your-gpu-image).
 
-## Testing the Docker Image
+#### Testing the Docker Image
 
 We will now test train-cnn-docker-image with sample input to ensure that train-cnn.py runs successfully AND that the GPU is utilized.
 
@@ -1518,7 +1518,7 @@ root@984b2508233b:/build# ls /mnt/work/output/trained_model
 >>> model_architecture.json    model_weights.h5
 ```
 
-## Task Definition
+#### Task Definition
 
 Defining a task that runs on a GPU is very similar to defining regular tasks. The one difference is in the containerDescriptors section: you must set the 'domain' property to 'nvidiagpu'. Here is the definition for train-cnn:
 
@@ -1573,7 +1573,7 @@ Defining a task that runs on a GPU is very similar to defining regular tasks. Th
 
 Now all we have to do is register train-cnn; follow the same steps as for hello-gbdx and rf-pool-classifier.
 
-## Executing the Task
+#### Executing the Task
 
 It's time to try out train-cnn. We'll use the publicly available [MNIST dataset](http://yann.lecun.com/exdb/mnist/), which contains 60,000 images of handwritten digits to train a model to recognize handwritten digits. Figure 6 shows some example images.
 
@@ -1629,7 +1629,7 @@ gbdx.s3.download(output_location)
 
 Congratulations, you have now created, registered, and executed a GBDX task on a GPU!
 
-## Additional Resources
+### Additional Resources
 
 You may find the following links helpful:
 
