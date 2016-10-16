@@ -41,7 +41,7 @@ When a workflow is executed, tasks are scheduled appropriately by a scheduler an
 # Hello GBDX
 
 In this section, we will write a Python script for our Hello GBDX task, hello-gbdx.
-The script [hello_gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) does the following: it obtains a list of the task input files and prints this list
+The script [hello-gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello-gbdx.py) does the following: it obtains a list of the task input files and prints this list
 in the file out.txt, along with a user defined message.
 This script is executed by the Python interpreter within the task's Docker container (more on this [a bit later](#about-docker)).
 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 ```
 
 How is data input to and output from hello-gbdx when it is executed on GBDX?
-If hello-gbdx is the first in a series of tasks comprising a workflow, data_in is assigned a string value by the user which is the S3 location that contains the task input files (it will soon become apparent how to do this). These files are automatically copied to mnt/work/input/data_in of the docker container which runs hello_gbdx.py (we will cover docker in the next section). When the execution of hello_gbdx.py is concluded, out.txt is found in mnt/work/input/data_out of the docker container (our script explicitly saved it there). GBDX permits saving the contents of mnt/work/input/data_out
+If hello-gbdx is the first in a series of tasks comprising a workflow, data_in is assigned a string value by the user which is the S3 location that contains the task input files (it will soon become apparent how to do this). These files are automatically copied to mnt/work/input/data_in of the docker container which runs hello-gbdx.py (we will cover docker in the next section). When the execution of hello-gbdx.py is concluded, out.txt is found in mnt/work/input/data_out of the docker container (our script explicitly saved it there). GBDX permits saving the contents of mnt/work/input/data_out
 at a user-specified S3 location, as well as feed those to the directory input port of another task in order to chain the two tasks together. If neither of those actions are performed, the contents of mnt/work/input/data_out are lost when the task executed. In this walkthrough, we will only consider single-task workflows; you can explore Platform Stories for examples of more complicated workflows involving multiple tasks.
 
 In the next section we go through the steps of creating a Docker image for hello-gbdx.
@@ -239,7 +239,7 @@ Congratulations! You now have your own docker image to which you can add your co
 ![docker_commit_wf.png]({{ site.baseurl }}/images/create-task/docker_commit_wf.png)
 *Figure 2: Adding code to a docker image.*
 
-The following steps (shown in Figure 2) walk you through adding [hello_gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello_gbdx.py) and [gbdx_task_interface.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/gbdx_task_interface.py) to hello-gbdx-docker-image. Before getting started ensure that both scripts are saved to your current working directory.
+The following steps (shown in Figure 2) walk you through adding [hello-gbdx.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/hello-gbdx.py) and [gbdx_task_interface.py](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/code/gbdx_task_interface.py) to hello-gbdx-docker-image. Before getting started ensure that both scripts are saved to your current working directory.
 
 First we run the image using the ```docker run``` command in detached mode (using the -d flag). This tells the container to run in the background so we can access the files on our local machine.
 
@@ -253,8 +253,8 @@ The value returned is the container id. Make note of this because we will need i
 We now use the ```docker cp``` command to copy our scripts into the container. The format of this command is as follows: ```docker cp <filename> <container_id>:<container_dest_path>```.
 
 ```bash
-# Copy hello_gbdx.py to the root directory of the container
-docker cp hello_gbdx.py <container_id>:/
+# Copy hello-gbdx.py to the root directory of the container
+docker cp hello-gbdx.py <container_id>:/
 docker cp gbdx_task_interface.py <container_id>:/
 ```
 
@@ -265,7 +265,7 @@ docker attach <container_id>
 
 # Notice that the scripts now live in the root directory of the container
 root@ff567ca72fa0:/ ls
-gbdx_task_interface.py   hello_gbdx.py   boot  etc   lib    media  opt   root  sbin  sys  usr  bin  dev   home  lib64  mnt    proc  run   srv   tmp  var
+gbdx_task_interface.py   hello-gbdx.py   boot  etc   lib    media  opt   root  sbin  sys  usr  bin  dev   home  lib64  mnt    proc  run   srv   tmp  var
 ```
 
 You may detach from the container (sending it back to background) without stopping it using the following escape sequence: <kbd>Ctrl</kbd>-<kbd>p</kbd> + <kbd>Ctrl</kbd>-<kbd>q</kbd>  
@@ -280,7 +280,7 @@ docker commit -m 'add scripts to root' <container_id> <your_username>/hello-gbdx
 docker push <your_username>/hello-gbdx-docker-image
 ```
 
-Now when you run hello-gbdx-docker-image, hello_gbdx.py and gbdx_task_interface.py will be in the root directory.
+Now when you run hello-gbdx-docker-image, hello-gbdx.py and gbdx_task_interface.py will be in the root directory.
 
 **Extra credit**: Although hello-gbdx does not require any additional libraries to run, often times you will need to install a package that is not provided in the image that you pulled. Let's say our task requires numpy to run; the process of adding it to the image is similar:
 
@@ -311,7 +311,7 @@ For more information on DockerFiles see [here](https://docs.docker.com/engine/re
 
 In this example, we will build hello-gbdx-docker-image.
 
-We begin by making the directory [hello-gbdx-build](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build), which will contain our DockerFile, and the subdirectory bin in which we copy hello_gbdx.py and gbdx_task_interface.py.
+We begin by making the directory [hello-gbdx-build](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build), which will contain our DockerFile, and the subdirectory bin in which we copy hello-gbdx.py and gbdx_task_interface.py.
 
 ```bash
 # Make build an bin directories
@@ -320,7 +320,7 @@ cd hello-gbdx-build/
 mkdir bin/
 
 # Copy both scripts for hello-gbdx into the bin/ directory
-cp path/to/hello_gbdx.py bin/
+cp path/to/hello-gbdx.py bin/
 cp path/to/gbdx_task_interface.py bin/
 ```
 
@@ -371,7 +371,7 @@ Our Docker image is now ready to be tested with sample inputs.
 
 ## Testing a Docker Image
 
-At this point you should have hello-gbdx-docker-image which includes hello_gbdx.py.
+At this point you should have hello-gbdx-docker-image which includes hello-gbdx.py.
 In this section, we will run this image with actual input data. Successfully doing this locally ensures that hello-gbdx will run on GBDX. [hello-gbdx/sample-input in this repo](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input) contains the two inputs required by hello-gbdx: (a) the directory [data_in](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/data_in), the contents of which will be written to out.txt (in this example, this is simply the file data_file.txt) (b) the file [ports.json](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/sample-input/ports.json) which
 contains the message to be written to out.txt. Keep in mind that ports.json is automatically created by GBDX based on the task definition and the values of the string input ports provided by the user when the task is executed.
 
@@ -391,10 +391,10 @@ root@3ad24b35e32e:/ ls /mnt/work/input/
 >>> data_in  ports.json
 ```
 
-To test hello-gbdx, simply run the hello_gbdx.py script.
+To test hello-gbdx, simply run the hello-gbdx.py script.
 
 ```bash
-root@3ad24b35e32e:/ python hello_gbdx.py
+root@3ad24b35e32e:/ python hello-gbdx.py
 ```
 
 If the script completes successfully you shouldn't see anything written to STDOUT and the file out.txt should be found under mnt/work/output/. Here is how you can confirm this:
@@ -464,7 +464,7 @@ The task definition is a [json file](https://github.com/PlatformStories/create-t
             "properties": {
                 "image": "naldeborgh/hello-gbdx-docker-image"
             },
-            "command": "python /hello_gbdx.py",
+            "command": "python /hello-gbdx.py",
             "isPublic": true
         }
     ]
@@ -537,7 +537,7 @@ We review the four parts of this definition below.
         "properties": {
             "image": "naldeborgh/hello-gbdx-docker-image"
         },
-        "command": "python /hello_gbdx.py",
+        "command": "python /hello-gbdx.py",
         "isPublic": true
 ```
 
@@ -634,7 +634,7 @@ rf-pool-classifier has two directory input ports: geojson and image. Within geoj
 
 ### The Code
 
-The code of rf_pool_classifier.py is shown below; the structure is the same as hello_gbdx.py.
+The code of rf-pool-classifier.py is shown below; the structure is the same as hello-gbdx.py.
 
 ```python
 import numpy as np
@@ -794,14 +794,14 @@ root@5d4ae93d26dd:/ exit
 docker commit -m 'install rf classifier packages' <container_id> <your_username>/rf-pool-classifier-docker-image
 ```
 
-We are now ready to copy rf_pool_classifier.py and gbdx_task_interface.py to rf-pool-classifier-docker-image. Make sure to have the script saved to your working directory and execute the following:
+We are now ready to copy rf-pool-classifier.py and gbdx_task_interface.py to rf-pool-classifier-docker-image. Make sure to have the script saved to your working directory and execute the following:
 
 ```bash
 # Run Docker in detached mode
 docker run -itd <your_username>/rf-pool-classifier-docker-image
 
 # Copy the script to the container and commit the changes
-docker cp rf_pool_classifier.py <container_id>:/
+docker cp rf-pool-classifier.py <container_id>:/
 docker cp gbdx_task_interface.py <container_id>:/
 docker commit -m 'copy rf_pool_classifier script' <container_id> <your_username>/rf-pool-classifier-docker-image
 ```
@@ -845,7 +845,7 @@ The DockerFile and scripts can be found [here](https://github.com/PlatformStorie
 
 ### Testing the Docker Image
 
-We can now test rf-pool-classifier-docker-image on our local machine before defining rf-pool-classifier and registering it on the platform. Just as in the case of [hello-gbdx](#testing-a-docker-image), we will mimic the platform by mounting sample input to a container and then executing rf_pool_classifier.py.
+We can now test rf-pool-classifier-docker-image on our local machine before defining rf-pool-classifier and registering it on the platform. Just as in the case of [hello-gbdx](#testing-a-docker-image), we will mimic the platform by mounting sample input to a container and then executing rf-pool-classifier.py.
 
 Create the directory rf_pool_classifier_test in which to download the task inputs from S3. You will need subdirectories for geojson and image.
 
@@ -883,10 +883,10 @@ Run rf-pool-classifier-docker-image with rf_pool_classifier_test mounted to the 
 docker run -v ~/<full/path/to/rf_pool_classifier_test>:/mnt/work/input -it <your_username>/rf-pool-classifier-docker-image
 ```
 
-Within the container run rf_pool_classifier.py.
+Within the container run rf-pool-classifier.py.
 
 ```bash
-python /rf_pool_classifier.py
+python /rf-pool-classifier.py
 ```
 
 The script should run without errors. To confirm this, check the output port directory for classifier.pkl.
@@ -943,7 +943,7 @@ The definition for rf-pool-classifier is provided below:
             "properties": {
                 "image": "naldeborgh/rf-pool-classifier-docker-image"
             },
-            "command": "python /rf_pool_classifier.py",
+            "command": "python /rf-pool-classifier.py",
             "isPublic": true
         }
     ]
