@@ -270,19 +270,23 @@ gbdx_task_interface.py   hello-gbdx.py   boot  etc   lib    media  opt   root  s
 
 You may detach from the container (sending it back to background) without stopping it using the following escape sequence: <kbd>Ctrl</kbd>-<kbd>p</kbd> + <kbd>Ctrl</kbd>-<kbd>q</kbd>  
 
-If we were to stop the container now, all of our changes would be lost and hello-gbdx-docker-image image would remain unchanged. To permanently update the image we must commit our changes to it. This command will save the changes you made to your container to hello-gbdx-docker-image.
+If we were to stop the container now, all of our changes would be lost and hello-gbdx-docker-image image would remain unchanged. To permanently update hello-gbdx-docker-image, we must commit our changes to it.
 
 ```bash
 # Commit the changes from the container to the image
 docker commit -m 'add scripts to root' <container_id> <your_username>/hello-gbdx-docker-image
-
-# Push the changes up to DockerHub
-docker push <your_username>/hello-gbdx-docker-image
 ```
 
 Now when you run hello-gbdx-docker-image, hello-gbdx.py and gbdx_task_interface.py will be in the root directory.
 
-**Extra credit**: Although hello-gbdx does not require any additional libraries to run, often times you will need to install a package that is not provided in the image that you pulled. Let's say our task requires numpy to run; the process of adding it to the image is similar:
+You can also push your new image to DockerHub in case you need to pull it in the future.
+
+```bash
+# Push the changes up to DockerHub
+docker push <your_username>/hello-gbdx-docker-image
+```
+
+Keep in mind that, although hello-gbdx does not require any additional libraries to run, often times you will need to install a package that is not provided in the image that you pulled. Let's say our task requires numpy to run; the process of adding it to the image is similar:
 
 ```bash
 # Start up a container in attached mode
