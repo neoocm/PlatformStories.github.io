@@ -22,7 +22,7 @@ This led to another question: can the [convolutional neural network (CNN)](https
 
 ## How
 
-The area of interest consists of 9 WorldView-2 and 2 GeoEye-1 image strips collected between January 2015 and May 2016 over northeastern Nigeria, and at the border of Nigeria and Niger. We picked 4 WorldView-2 strips, divided them in square chips of side 115m (250 pixels at sensor resolution) and asked our crowd to label them as 'Buildings' or 'No Buildings'. The output of the crowdsourcing campaign is the file train.geojson which contains the labeled chip geometries (a small sample [here](https://github.com/PlatformStories/building-detection/blob/master/train.geojson)).
+The area of interest consists of 9 WorldView-2 and 2 GeoEye-1 image strips collected between January 2015 and May 2016 over northeastern Nigeria, close to as well as on the border with Niger and Cameroon. We picked 4 WorldView-2 strips, divided them in square chips of side 115m (250 pixels at sensor resolution) and asked our crowd to label them as 'Buildings' or 'No Buildings'. The output of the crowdsourcing campaign is the file train.geojson which contains the labeled chip geometries (a small sample [here](https://github.com/PlatformStories/building-detection/blob/master/train.geojson)).
 
 As shown in the following diagram, train.geojson and the image GeoTiff files are given as input to [train-cnn-classifier](https://github.com/PlatformStories/swimming-pools/blob/master/docs/train-cnn-classifier.md) which produces a trained Keras model. The images are orthorectified, atmospherically compensated and pansharpened using our [image preprocessor](https://gbdxdocs.digitalglobe.com/docs/advanced-image-preprocessor).
 
