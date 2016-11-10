@@ -22,7 +22,7 @@ This led to another question: can the [convolutional neural network (CNN)](https
 
 ## How
 
-The area of interest consists of 9 WorldView-2 and 2 GeoEye-1 image strips collected between January 2015 and May 2016 over northeastern Nigeria, and at the border of Nigeria and Niger. We picked 4 WorldView-2 strips, divided them in square chips of side 125m and asked our crowd to label them as 'Buildings' or 'No Buildings'. The output of the crowdsourcing campaign is the file train.geojson which contains the labeled chip geometries (a small sample [here](https://github.com/PlatformStories/building-detection/blob/master/train.geojson)).
+The area of interest consists of 9 WorldView-2 and 2 GeoEye-1 image strips collected between January 2015 and May 2016 over northeastern Nigeria, and at the border of Nigeria and Niger. We picked 4 WorldView-2 strips, divided them in square chips of side 115m (250 pixels at sensor resolution) and asked our crowd to label them as 'Buildings' or 'No Buildings'. The output of the crowdsourcing campaign is the file train.geojson which contains the labeled chip geometries (a small sample [here](https://github.com/PlatformStories/building-detection/blob/master/train.geojson)).
 
 As shown in the following diagram, train.geojson and the image GeoTiff files are given as input to [train-cnn-classifier](https://github.com/PlatformStories/swimming-pools/blob/master/docs/train-cnn-classifier.md) which produces a trained Keras model. The images are orthorectified, atmospherically compensated and pansharpened using our [image preprocessor](https://gbdxdocs.digitalglobe.com/docs/advanced-image-preprocessor).
 
@@ -120,7 +120,7 @@ catid = '103001003D8CC700'
 gbdx.s3.download(join(output_location, catid, 'classified_geojson'), 'classified_geojson')
 ```
 
-A few words about training the model. We used a training set of 5000 chips, 2500 from each class, which we randomly sampled from the 4 training strips. We downsampled each chip from 245x245 to 150x150 in order for the network to fit into memory.
+A few words about training the model. We used a training set of 5000 chips, 2500 from each class, which we randomly sampled from the 4 training strips. We down-sampled each chip from 245x245 to 150x150 in order for the network to fit into memory.
 After trial and error, we found that the optimum batch size was 32 chips; a smaller size caused validation loss to bounce around during training, while a larger size resulted in memory issues. Finally, we settled on a learning rate of 0.001 because it was the fastest rate that resulted in convergence to the minimum loss.
 
 
@@ -154,4 +154,4 @@ It is fascinating that the same CNN architecture can be used successfully on Wor
 detect swimming pools in a suburban environment in Australia, and on WorldView-2 and GeoEye-1 imagery to detect buildings in the Nigerian desert.
 
 It takes about 10 hours to train the model for 75 epochs on 4 strips, on a
-g2.2xlarge AWS instance. The trained model can classify approximately 200000 chips, i.e., a little over 3000 km2, per hour on the same instance type. For the purpose of this demo, we deployed the trained model on 7 strips. We ran another experiment with 72 strips which is roughly 3 million chips and a total area of 450000 km2. It took a little less than 2 hours to complete this experiment. Due to the inherent parallelization offered by GBDX, this time is dictated by the size of the largest strip. Going from 7 to 72 strips is simply a matter of adding more catalog ids to the 'for' loop in our Python script.
+g2.2xlarge AWS instance. The trained model can classify approximately 200000 chips, i.e., a little over 3000 km2, per hour on the same instance type. For the purpose of this demo, we deployed the trained model on 7 strips. We ran another experiment with 72 strips which is roughly 3 million chips and a total area of around 40000 km2. It took a little less than 2 hours to complete this experiment. Due to the inherent parallelization offered by GBDX, this time is dictated by the size of the largest strip. Going from 7 to 72 strips is simply a matter of adding more catalog ids to the 'for' loop in our Python script.
