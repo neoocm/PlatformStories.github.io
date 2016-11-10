@@ -128,7 +128,7 @@ After trial and error, we found that the optimum batch size was 32 chips; a smal
 
 We used [gdal_rasterize](http://www.gdal.org/gdal_rasterize.html) in order to create a heat map
 of the model confidence in the presence of buildings across each strip that the model was deployed on
-(More on how to do this in a future post!) You can examine a subset of the results [on this map]({{ site.baseurl }}/pages/building-detection/daffa.html), where we have overlaid the building heat map on one of the strips near Diffa.
+(More on how to do this in a future post!) You can examine a subset of the results [on this map]({{ site.baseurl }}/pages/building-detection/diffa.html), where we have overlaid the building heat map on one of the strips near Diffa.
 
 It is quite apparent that the CNN is more confident in the presence of buildings when more of them are
 present in the chip! As the building density decreases, the confidence decreases as well. Here are some screenshots
