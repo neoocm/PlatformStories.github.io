@@ -112,10 +112,11 @@ Once the workflow completes, you can download the outputs as follows.
 (Keep in mind that you need to create the local directories before downloading.)
 
 ```python
-# train-cnn-classifier sample output: final model
-gbdx.s3.download(join(output_location, 'trained_model'), 'trained_model')
+# download model architecture and weights
+gbdx.s3.download(join(output_location, 'trained_model', 'model_architecture.json'), 'trained_model')
+gbdx.s3.download(join(output_location, 'trained_model', 'model_weights.h5'), 'trained_model')
 
-# deploy-cnn-classifier sample output
+# download classified chips for one of the strips
 catid = '103001003D8CC700'
 gbdx.s3.download(join(output_location, catid, 'classified_geojson'), 'classified_geojson')
 ```
