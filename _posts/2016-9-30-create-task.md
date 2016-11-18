@@ -355,7 +355,7 @@ We instruct Docker to place the contents of [bin](https://github.com/PlatformSto
 ADD ./bin /
 ```
 
-Our DockerFile is now [complete]((https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build/Dockerfile)). Exit vim with the ```:wq``` command.
+Our DockerFile is now [complete](https://github.com/PlatformStories/create-task/tree/master/hello-gbdx/hello-gbdx-build/Dockerfile). Exit vim with the ```:wq``` command.
 
 We are now ready to build the image. Make sure that you are still in the hello-gbdx-build directory and execute the following command:
 
